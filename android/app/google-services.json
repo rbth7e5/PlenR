@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "330206970399",
+    "firebase_url": "https://plenr-3b763.firebaseio.com",
+    "project_id": "plenr-3b763",
+    "storage_bucket": "plenr-3b763.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330206970399:android:fd46e6a549b8d444",
+        "android_client_info": {
+          "package_name": "com.plenr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330206970399-asjg0n8odao5ccrtjbdf7jp5npepihlm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA61UC6vc3S-1a1Ww3r-QK40FHTL5NGBn8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
