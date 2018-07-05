@@ -11,7 +11,7 @@ import {
   AsyncStorage
 } from 'react-native';
 
-import EventBox from './EventBox';
+import EventBox from '../util/EventBox';
 import AddEvent from './AddEvent';
 import EventDetails from './EventDetails';
 import SortedList from '../util/SortedList';
@@ -288,81 +288,81 @@ export default class MyPlenR extends Component<Props> {
     });
     var today = new Date();
     return (
-      <View style={styles.container}>
-        <View style={styles.picker}>
-          <View style={styles.picker_item}>
-            <Icon.Button
-              onPress={() => {
-                this.setState({
-                  day_selected: (this.state.month+11)%12 == today.getMonth() ? today.getDate() : 1,
-                  month: (this.state.month + 11)%12,
-                })
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.picker}>
+            <View style={styles.picker_item}>
+              <Icon.Button
+                onPress={() => {
+                  this.setState({
+                    day_selected: (this.state.month+11)%12 == today.getMonth() ? today.getDate() : 1,
+                    month: (this.state.month + 11)%12,
+                  })
 
-              }}
-              name = "chevron-left"
-              backgroundColor = "#fff"
-              iconStyle = {styles.picker_icon}
-            />
-            <Text style={styles.picker_text}>{monthNames[this.state.month]}</Text>
-            <Icon.Button
-              onPress={() => {
-                this.setState({
-                  day_selected: (this.state.month+1)%12 == today.getMonth() ? today.getDate() : 1,
-                  month: (this.state.month + 1)%12,
+                }}
+                name = "chevron-left"
+                backgroundColor = "#fff"
+                iconStyle = {styles.picker_icon}
+              />
+              <Text style={styles.picker_text}>{monthNames[this.state.month]}</Text>
+              <Icon.Button
+                onPress={() => {
+                  this.setState({
+                    day_selected: (this.state.month+1)%12 == today.getMonth() ? today.getDate() : 1,
+                    month: (this.state.month + 1)%12,
 
-                })
-              }}
-              name = "chevron-right"
-              backgroundColor = "#fff"
-              iconStyle = {styles.picker_icon}
-            />
+                  })
+                }}
+                name = "chevron-right"
+                backgroundColor = "#fff"
+                iconStyle = {styles.picker_icon}
+              />
+            </View>
+            <View style={styles.picker_item}>
+              <Icon.Button
+                onPress={() => {
+                  this.setState({
+                    day_selected: (this.state.year+9998)%9999 == today.getFullYear() ? today.getDate() : 1,
+                    year: (this.state.year + 9998)%9999,
+
+                  })
+
+                }}
+                name = "chevron-left"
+                backgroundColor = "#fff"
+                iconStyle = {styles.picker_icon}
+              />
+              <Text style={styles.picker_text}>{this.state.year}</Text>
+              <Icon.Button
+                onPress={() => {
+                  this.setState({
+                    day_selected: (this.state.year+1)%9999 == today.getFullYear() ? today.getDate() : 1,
+                    year: (this.state.year + 1)%9999,
+
+                  })
+                }}
+                name = "chevron-right"
+                backgroundColor = "#fff"
+                iconStyle = {styles.picker_icon}
+              />
+            </View>
           </View>
-          <View style={styles.picker_item}>
-            <Icon.Button
-              onPress={() => {
-                this.setState({
-                  day_selected: (this.state.year+9998)%9999 == today.getFullYear() ? today.getDate() : 1,
-                  year: (this.state.year + 9998)%9999,
-
-                })
-
-              }}
-              name = "chevron-left"
-              backgroundColor = "#fff"
-              iconStyle = {styles.picker_icon}
-            />
-            <Text style={styles.picker_text}>{this.state.year}</Text>
-            <Icon.Button
-              onPress={() => {
-                this.setState({
-                  day_selected: (this.state.year+1)%9999 == today.getFullYear() ? today.getDate() : 1,
-                  year: (this.state.year + 1)%9999,
-
-                })
-              }}
-              name = "chevron-right"
-              backgroundColor = "#fff"
-              iconStyle = {styles.picker_icon}
-            />
+          <View style={styles.weekday}>
+            {weekDays.map((day) => {
+                return(<Text key={day} style={styles.weekday_text}>{day}</Text>);
+              })}
+          </View>
+          {monthArray.map((week) => {
+            return(<View key={week} style={styles.weeks}>{week.map((day) => {
+              return this.formatDate(day);
+            })}</View>);
+          })}
+          <View style={styles.gap}></View>
+          <View style={styles.events}>
+            {this.renderRetrievedEvents(this.retrieveEvents(this.state.day_selected), this.state.day_selected)}
           </View>
         </View>
-        <View style={styles.weekday}>
-          {weekDays.map((day) => {
-              return(<Text key={day} style={styles.weekday_text}>{day}</Text>);
-            })}
-        </View>
-        {monthArray.map((week) => {
-          return(<View key={week} style={styles.weeks}>{week.map((day) => {
-            return this.formatDate(day);
-          })}</View>);
-        })}
-        <View style={styles.gap}></View>
-        <View style={styles.events}>
-          <ScrollView>
-          {this.renderRetrievedEvents(this.retrieveEvents(this.state.day_selected), this.state.day_selected)}
-          </ScrollView>
-        </View>
-      </View>
+      </ScrollView>
     );
   }
 }

@@ -11,6 +11,9 @@ import {
 } from 'react-native';
 
 export default class OrganiseEvent extends Component<Props> {
+  static navigatorStyle = {
+    navBarNoBorder: true,
+  };
   static navigatorButtons = {
     rightButtons: [
       {

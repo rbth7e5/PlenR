@@ -10,11 +10,15 @@ import {
   Platform,
   TextInput,
   DatePickerIOS,
+  LayoutAnimation,
 } from 'react-native';
 
 import Event from '../util/Event';
 
 export default class AddEvent extends Component<Props> {
+  static navigatorStyle = {
+    navBarNoBorder: true,
+  };
   static navigatorButtons = {
     ...Platform.select({
       ios: {
@@ -87,7 +91,8 @@ export default class AddEvent extends Component<Props> {
         <View style={styles.datepickerstart}>
          <DatePickerIOS
           date={this.state.start}
-          onDateChange={(newDate) => {this.setState({
+          onDateChange={(newDate) => {
+            this.setState({
               start: newDate,
               end: new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(),
                 newDate.getHours() + 1, newDate.getMinutes(), 0, 0)
@@ -137,66 +142,96 @@ export default class AddEvent extends Component<Props> {
     return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
   }
   render(){
+    let pickerAnimationSetting = {
+      duration: 300,
+      create: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.opacity,
+      },
+      update: {
+        type: LayoutAnimation.Types.easeInEaseOut,
+      },
+    };
     return (
       <View style={styles.container}>
-        <View style={styles.gaps_between}></View>
-        <View style={styles.title}>
-          <TextInput
-            placeholder = {'Title'}
-            placeholderTextColor = '#aaaaaa'
-            onChangeText = {(text) => this.state.title = text}
-            style={styles.title_text}
-          />
-          <TextInput
-            placeholder = {'Location'}
-            placeholderTextColor = '#aaaaaa'
-            onChangeText = {(text) => this.state.location = text}
-            style={styles.location_text}
-          />
-        </View>
-        <View style={styles.gaps_between}></View>
-        <View style={styles.gaps_between}></View>
-        <View style={styles.timing}>
-          <TouchableHighlight
-            onPress={() => this.setState({
-              dateStartPickerVisible: !this.state.dateStartPickerVisible,
-              dateEndPickerVisible: false
-            })}
-          >
-            <View style={styles.start}>
-              <View style={styles.start_underline}>
-                <Text style={styles.start_text}>Starts</Text>
-                <Text style={styles.selection_text}>{this.formatDate(this.state.start)}</Text>
-                <Text style={styles.selection_text}>{this.formatDateAMPM(this.state.start)}</Text>
-              </View>
-            </View>
-          </TouchableHighlight>
-          {this.renderStartDatePicker()}
-          <TouchableHighlight
-            onPress={() => this.setState({
-              dateEndPickerVisible: !this.state.dateEndPickerVisible,
-              dateStartPickerVisible: false
-            })}
-          >
-          <View style={styles.end}>
-            <Text style={styles.start_text}>Ends</Text>
-            <Text style={styles.selection_text}>{this.state.end.toDateString() == this.state.start.toDateString() ?
-                  '' : this.formatDate(this.state.end)}</Text>
-            <Text style={styles.selection_text}>{this.formatDateAMPM(this.state.end)}</Text>
+        <ScrollView>
+          <View style={styles.gaps_between}></View>
+          <View style={styles.title}>
+            <TextInput
+              placeholder = {'Title'}
+              placeholderTextColor = '#aaaaaa'
+              onChangeText = {(text) => this.state.title = text}
+              style={styles.title_text}
+              returnKeyType='next'
+              ref={ref => {this._titleInput = ref}}
+              onSubmitEditing={() => {this._locationInput && this._locationInput.focus()}}
+            />
+            <TextInput
+              placeholder = {'Location'}
+              placeholderTextColor = '#aaaaaa'
+              onChangeText = {(text) => this.state.location = text}
+              style={styles.location_text}
+              returnKeyType='next'
+              ref={ref => {this._locationInput = ref}}
+              onSubmitEditing={() => {
+                LayoutAnimation.configureNext(pickerAnimationSetting);
+                this.setState({
+                  dateStartPickerVisible: !this.state.dateStartPickerVisible,
+                  dateEndPickerVisible: false
+                });
+              }}
+            />
           </View>
-          </TouchableHighlight>
-          {this.renderEndDatePicker()}
-        </View>
-        <View style={styles.gaps_between}></View>
-        <View style={styles.gaps_between}></View>
-        <View style={styles.notes}>
-          <TextInput
-            placeholder = {'Notes'}
-            placeholderTextColor = '#aaaaaa'
-            onChangeText = {(text) => this.state.notes = text}
-            style={styles.notes_text}
-          />
-        </View>
+          <View style={styles.gaps_between}></View>
+          <View style={styles.gaps_between}></View>
+          <View style={styles.timing}>
+            <TouchableHighlight
+              onPress={() => {
+                LayoutAnimation.configureNext(pickerAnimationSetting);
+                this.setState({
+                  dateStartPickerVisible: !this.state.dateStartPickerVisible,
+                  dateEndPickerVisible: false
+                });
+              }}
+            >
+              <View style={styles.start}>
+                <View style={styles.start_underline}>
+                  <Text style={styles.start_text}>Starts</Text>
+                  <Text style={styles.selection_text}>{this.formatDate(this.state.start)}</Text>
+                  <Text style={styles.selection_text}>{this.formatDateAMPM(this.state.start)}</Text>
+                </View>
+              </View>
+            </TouchableHighlight>
+            {this.renderStartDatePicker()}
+            <TouchableHighlight
+              onPress={() => {
+                LayoutAnimation.configureNext(pickerAnimationSetting);
+                this.setState({
+                  dateEndPickerVisible: !this.state.dateEndPickerVisible,
+                  dateStartPickerVisible: false
+                });
+              }}
+            >
+            <View style={styles.end}>
+              <Text style={styles.start_text}>Ends</Text>
+              <Text style={styles.selection_text}>{this.state.end.toDateString() == this.state.start.toDateString() ?
+                    '' : this.formatDate(this.state.end)}</Text>
+              <Text style={styles.selection_text}>{this.formatDateAMPM(this.state.end)}</Text>
+            </View>
+            </TouchableHighlight>
+            {this.renderEndDatePicker()}
+          </View>
+          <View style={styles.gaps_between}></View>
+          <View style={styles.gaps_between}></View>
+          <View style={styles.notes}>
+            <TextInput
+              placeholder = {'Notes'}
+              placeholderTextColor = '#aaaaaa'
+              onChangeText = {(text) => this.state.notes = text}
+              style={styles.notes_text}
+            />
+          </View>
+        </ScrollView>
       </View>
     )
   }
@@ -239,10 +274,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#dddddd',
     height: 200,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start'
   },
   notes_text: {
     paddingTop: 10,
+    paddingRight: 100,
+    paddingBottom: 150,
     fontSize: 17,
+    flex: 1,
   },
   start: {
     height: 45,

@@ -11,12 +11,15 @@ import {
   TextInput,
   DatePickerIOS,
   Alert,
+  LayoutAnimation,
 } from 'react-native';
 
-import EventDetails from './EventDetails';
 import Event from '../util/Event';
 
 export default class EditEvent extends Component<Props> {
+  static navigatorStyle = {
+    navBarNoBorder: true,
+  };
   static navigatorButtons = {
     ...Platform.select({
       ios: {
@@ -138,6 +141,16 @@ export default class EditEvent extends Component<Props> {
   }
 
   render(){
+    let pickerAnimationSetting = {
+      duration: 300,
+      create: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.opacity,
+      },
+      update: {
+        type: LayoutAnimation.Types.easeInEaseOut,
+      },
+    };
     return (
       <View style={styles.container}>
         <ScrollView>
@@ -162,10 +175,13 @@ export default class EditEvent extends Component<Props> {
           <View style={styles.gaps_between}></View>
           <View style={styles.timing}>
             <TouchableHighlight
-              onPress={() => this.setState({
-                dateStartPickerVisible: !this.state.dateStartPickerVisible,
-                dateEndPickerVisible: false
-              })}
+              onPress={() => {
+                LayoutAnimation.configureNext(pickerAnimationSetting);
+                this.setState({
+                  dateStartPickerVisible: !this.state.dateStartPickerVisible,
+                  dateEndPickerVisible: false
+                });
+              }}
             >
               <View style={styles.start}>
                 <View style={styles.start_underline}>
@@ -177,10 +193,13 @@ export default class EditEvent extends Component<Props> {
             </TouchableHighlight>
             {this.renderStartDatePicker()}
             <TouchableHighlight
-              onPress={() => this.setState({
-                dateEndPickerVisible: !this.state.dateEndPickerVisible,
-                dateStartPickerVisible: false
-              })}
+              onPress={() => {
+                LayoutAnimation.configureNext(pickerAnimationSetting);
+                this.setState({
+                  dateEndPickerVisible: !this.state.dateEndPickerVisible,
+                  dateStartPickerVisible: false
+                });
+              }}
             >
             <View style={styles.end}>
               <Text style={styles.start_text}>Ends</Text>
@@ -262,10 +281,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#dddddd',
     height: 200,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start'
   },
   notes_text: {
     paddingTop: 10,
+    paddingRight: 100,
+    paddingBottom: 150,
     fontSize: 17,
+    flex: 1,
   },
   start: {
     height: 45,

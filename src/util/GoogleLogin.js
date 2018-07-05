@@ -4,7 +4,6 @@ import { GoogleSignin } from 'react-native-google-signin';
 import firebase from 'react-native-firebase';
 import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator } from 'react-native';
 import SortedList from './SortedList';
-import EventBox from '../screens/EventBox';
 import Event from './Event';
 
 export default class GoogleLogin extends Component<Props> {
