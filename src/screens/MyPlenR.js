@@ -58,23 +58,9 @@ export default class MyPlenR extends Component<Props> {
       month: today.getMonth(),
       day_selected: today.getDate(),
       weekends: 6,
-      total_events: new SortedList(this.eventComparator),
+      local_events: new SortedList(Event.eventComparator),
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-  }
-  /*
-  storeEvents = async (data) => {
-    try {
-    }
-  }*/
-
-  eventComparator(first, second) {
-    if (first.id == second.id) {
-      return 0;
-    }
-    if (first.start > second.start) {
-      return 1;
-    } else return -1;
   }
 
   onNavigatorEvent(event) {
@@ -89,7 +75,7 @@ export default class MyPlenR extends Component<Props> {
             month_selected: this.state.month,
             day_selected: this.state.day_selected,
             onAddEvent: (data) => this.setState({
-              total_events: this.state.total_events.add(data)
+              local_events: this.state.local_events.add(data)
             })
           }
         });
@@ -124,7 +110,7 @@ export default class MyPlenR extends Component<Props> {
               continue;
             }
             this.setState({
-              total_events: this.state.total_events.add(Event.importAdd({
+              local_events: this.state.local_events.add(Event.importAdd({
                 title: e.summary,
                 location: e.location,
                 start: start,
@@ -143,17 +129,9 @@ export default class MyPlenR extends Component<Props> {
     }
   }
 
-  onSyncEventsWithExternalCalendars(eventsFromOtherCalendars) {
-    for (let event of eventsFromOtherCalendars) {
-      this.setState({
-        total_events: this.state.total_events.add(event),
-      })
-    }
-  }
-
   retrieveEvents(day) {
     let currentDay = moment(new Date(this.state.year, this.state.month, day));
-    return this.state.total_events.filter((event) => {
+    return this.state.local_events.filter((event) => {
       if (event.start.getFullYear() == this.state.year
           && event.start.getMonth() == this.state.month
           && event.start.getDate() == day) {
@@ -162,16 +140,6 @@ export default class MyPlenR extends Component<Props> {
         return true;
       } else return false;
     })
-  }
-
-  removeEventFromList(eventID, eventList) {
-    var copy = eventList.clone();
-    eventList.forEach((event) => {
-      if (event.id == eventID) {
-        copy.delete(event);
-      }
-    })
-    return copy;
   }
 
   renderRetrievedEvents(retrievedEvents, day_selected) {
@@ -194,10 +162,10 @@ export default class MyPlenR extends Component<Props> {
               passProps: {
                 event: e,
                 onDeleteEvent: (event) => this.setState({
-                  total_events: this.state.total_events.delete(event)
+                  local_events: this.state.local_events.delete(event)
                 }),
                 onAddEvent: (data) => this.setState({
-                  total_events: this.state.total_events.add(data)
+                  local_events: this.state.local_events.add(data)
                 })
               },
               animated: true,

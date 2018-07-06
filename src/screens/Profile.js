@@ -9,12 +9,9 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
-import GoogleLogin from '../util/GoogleLogin';
-
 export default class Profile extends Component<Props> {
   static navigatorStyle = {
     largeTitle: true,
-    navBarNoBorder: true,
   }
 
   constructor(props) {
@@ -34,7 +31,17 @@ export default class Profile extends Component<Props> {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.account_container}>
-          <GoogleLogin onRetrieveEvents={this.handleEvents}/>
+          <Button
+            title='Google'
+            onPress={() => this.props.navigator.push({
+              screen: 'PlenR.GoogleLogin',
+              title: 'Calendars',
+              passProps: {
+                onRetrieveEvents: this.handleEvents,
+              },
+              animated: true,
+            })}
+          />
         </View>
       </ScrollView>
     );
@@ -50,6 +57,6 @@ const styles = StyleSheet.create({
     padding: 15,
     flex: 1,
     borderBottomWidth: 1,
-    borderBottomColor: '#dddddd'
+    borderColor: '#dddddd'
   }
 })

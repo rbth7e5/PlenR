@@ -9,6 +9,15 @@ export default class Event {
     this.id = idCreator();
   }
 
+  static eventComparator(first, second) {
+    if (first.id == second.id) {
+      return 0;
+    }
+    if (first.start > second.start) {
+      return 1;
+    } else return -1;
+  }
+
   static importAdd(props) {
     let newEvent = new Event({
       title: props.title,

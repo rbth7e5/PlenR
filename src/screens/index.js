@@ -7,6 +7,7 @@ import EventDetails from './EventDetails';
 import EditEvent from './EditEvent';
 import Profile from './Profile';
 import Notifications from './Notifications';
+import GoogleLogin from './GoogleLogin';
 
 export function registerScreens(store, Provider) {
   Navigation.registerComponent('PlenR.MyPlenR', () => MyPlenR, store, Provider);
@@ -16,4 +17,5 @@ export function registerScreens(store, Provider) {
   Navigation.registerComponent('PlenR.EditEvent', () => EditEvent, store, Provider);
   Navigation.registerComponent('PlenR.Profile', () => Profile, store, Provider);
   Navigation.registerComponent('PlenR.Notifications', () => Notifications, store, Provider);
+  Navigation.registerComponent('PlenR.GoogleLogin', () => GoogleLogin, store, Provider);
 }
