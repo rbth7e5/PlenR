@@ -31,6 +31,33 @@ export default class Event {
     return newEvent;
   }
 
+  static formatGoogle(e) {
+    let start;
+    let end;
+    let allDay;
+    if (e.start.date && e.end.date) {
+      start = moment(e.start.date).toDate();
+      end = moment(e.end.date).toDate();
+      allDay = true;
+    } else if (e.start.dateTime && e.end.dateTime) {
+      start = moment(e.start.dateTime).toDate();
+      end = moment(e.end.dateTime).toDate();
+      allDay = false;
+    } else {
+      throw 'invalid event';
+    }
+    let event = Event.importAdd({
+      title: e.summary,
+      location: e.location,
+      start: start,
+      end: end,
+      notes: e.description,
+      allday: allDay,
+      id: e.id,
+    });
+    return event;
+  }
+
   clone() {
     let newEvent = new Event({
       title: this.title,
@@ -55,36 +82,7 @@ export default class Event {
     newEvent.id = this.id;
     return newEvent;
   }
-
-  editTitle(title) {
-    let newEvent = this.clone();
-    newEvent.title = title;
-    return newEvent;
-  }
-
-  editLocation(location) {
-    let newEvent = this.clone();
-    newEvent.location = location;
-    return newEvent;
-  }
-
-  editStart(start) {
-    let newEvent = this.clone();
-    newEvent.start = start;
-    return newEvent;
-  }
-
-  editEnd(end) {
-    let newEvent = this.clone();
-    newEvent.end = end;
-    return newEvent;
-  }
-
-  editNotes(notes) {
-    let newEvent = this.clone();
-    newEvent.notes = notes;
-    return newEvent;
-  }
 }
 
+const moment = require('moment');
 const idCreator = require('uuid/v4');

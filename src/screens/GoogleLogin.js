@@ -129,39 +129,6 @@ export default class GoogleLogin extends Component<Props> {
     request.send();
   }
 
-  getEventsFromCalendar = async (calendarID) => {
-    this.setState({
-      retrievingEvents: true,
-      retrievingEvents_calendar_id: calendarID
-    });
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = (e) => {
-      if (request.readyState !== 4) {
-        return;
-      }
-      if (request.status === 200) {
-        console.log('success', request.responseText);
-        this.setState({events: request.responseText});
-        const eventsList = JSON.parse(request.responseText);
-        this.setState({
-          eventsListArray: JSON.stringify(eventsList.items),
-          retrievingEvents: false
-        })
-        this.props.onRetrieveEvents(request.responseText);
-      } else {
-        alert('Sync Failed');
-        this.setState({
-          retrievingEvents: false
-        });
-      }
-    };
-
-    request.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/'+calendarID+'/events?access_token='+this.state.user.accessToken
-        + '&timeMin=' + moment().subtract(2, 'months').utc().format().toString());
-    request.send();
-
-  }
-
   render() {
     const { user, error } = this.state;
     if (!user) {

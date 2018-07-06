@@ -8,7 +8,8 @@ import {
   ScrollView,
   Button,
   TouchableHighlight,
-  AsyncStorage
+  AsyncStorage,
+  ActivityIndicator
 } from 'react-native';
 
 import EventBox from '../util/EventBox';
@@ -48,6 +49,12 @@ export default class MyPlenR extends Component<Props> {
         })
       }
     ],
+    leftButtons: [
+      {
+        id: 'delete cache',
+        title: 'Delete Cache'
+      },
+    ]
   };
 
   constructor(props) {
@@ -59,8 +66,20 @@ export default class MyPlenR extends Component<Props> {
       day_selected: today.getDate(),
       weekends: 6,
       local_events: new SortedList(Event.eventComparator),
+      retrievingEvents: true,
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+  }
+
+  componentDidMount() {
+    this.props.navigator.showLightBox({
+      screen: 'PlenR.Loading',
+      style: {
+        backgroundBlur: 'light',
+        tapBackgroundToDismiss: false,
+      }
+    })
+    this.retrieveGoogleEventsFromCache();
   }
 
   onNavigatorEvent(event) {
@@ -87,38 +106,21 @@ export default class MyPlenR extends Component<Props> {
           animationType: 'slide-up',
         })
       }
+      if (event.id == 'delete cache') {
+        AsyncStorage.clear();
+      }
     }
     if (event.type == 'DeepLink') {
       const parts = event.link.split('`');
       if (parts[0] == 'googleEvents') {
-        const googleEventsArray = JSON.parse(parts[1]).items;
+        let string = parts[1];
+        const googleEventsArray = JSON.parse(string).items;
+        AsyncStorage.setItem('@googleCalendar:key', string);
         for (let e of googleEventsArray) {
           try {
-            let start;
-            let end;
-            let allDay;
-            if (e.start.date && e.end.date) {
-              start = moment(e.start.date).toDate();
-              end = moment(e.end.date).toDate();
-              allDay = true;
-            } else if (e.start.dateTime && e.end.dateTime){
-              start = moment(e.start.dateTime).toDate();
-              end = moment(e.end.dateTime).toDate();
-              allDay = false;
-            } else {
-              console.log('skipped', e)
-              continue;
-            }
+            let event = Event.formatGoogle(e);
             this.setState({
-              local_events: this.state.local_events.add(Event.importAdd({
-                title: e.summary,
-                location: e.location,
-                start: start,
-                end: end,
-                notes: e.description,
-                allday: allDay,
-                id: e.id,
-              }))
+              local_events: this.state.local_events.add(event)
             });
           } catch (error) {
             console.log(error);
@@ -129,7 +131,29 @@ export default class MyPlenR extends Component<Props> {
     }
   }
 
-  retrieveEvents(day) {
+  retrieveGoogleEventsFromCache() {
+    let value = AsyncStorage.getItem("@googleCalendar:key");
+    value.then((string) => {
+      let googleEventsArray = JSON.parse(string).items;
+      for (let e of googleEventsArray) {
+        try {
+          let event = Event.formatGoogle(e);
+          this.setState({
+            local_events: this.state.local_events.add(event)
+          });
+        } catch (error) {
+          console.log(error);
+          continue;
+        }
+      }
+    }).catch((error) => {
+      console.log(error);
+    }).finally(() => {
+      this.props.navigator.dismissLightBox();
+    })
+  }
+
+  retrieveEventsForDay(day) {
     let currentDay = moment(new Date(this.state.year, this.state.month, day));
     return this.state.local_events.filter((event) => {
       if (event.start.getFullYear() == this.state.year
@@ -327,7 +351,7 @@ export default class MyPlenR extends Component<Props> {
           })}
           <View style={styles.gap}></View>
           <View style={styles.events}>
-            {this.renderRetrievedEvents(this.retrieveEvents(this.state.day_selected), this.state.day_selected)}
+            {this.renderRetrievedEvents(this.retrieveEventsForDay(this.state.day_selected), this.state.day_selected)}
           </View>
         </View>
       </ScrollView>
@@ -345,6 +369,11 @@ const monthNames = ["January", "February", "March", "April", "May", "June", "Jul
   "September", "October", "November", "December"];
 
 const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     flexDirection: 'column',
