@@ -67,6 +67,7 @@ export default class MyPlenR extends Component<Props> {
       weekends: 6,
       local_events: new SortedList(Event.eventComparator),
       retrievingEvents: true,
+      calendarKeys: [],
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -78,8 +79,19 @@ export default class MyPlenR extends Component<Props> {
         backgroundBlur: 'light',
         tapBackgroundToDismiss: false,
       }
-    })
-    this.retrieveGoogleEventsFromCache();
+    });
+    AsyncStorage.getItem('@calendarKeys:key')
+      .then((string) => {
+        let calendarKeys = JSON.parse(string);
+        if (calendarKeys !== null) {
+          this.setState({calendarKeys: calendarKeys});
+          this.retrieveGoogleEventsFromCache(calendarKeys);
+        } else {
+          this.props.navigator.dismissLightBox();
+        }
+      }).catch((error) => {
+        console.log(error, 'failed to retrieve calendar keys');
+      })
   }
 
   onNavigatorEvent(event) {
@@ -107,15 +119,21 @@ export default class MyPlenR extends Component<Props> {
         })
       }
       if (event.id == 'delete cache') {
-        AsyncStorage.clear();
+        AsyncStorage.clear()
+          .catch((error) => {
+            console.log(error)
+          });
       }
     }
     if (event.type == 'DeepLink') {
       const parts = event.link.split('`');
       if (parts[0] == 'googleEvents') {
-        let string = parts[1];
+        let id = parts[1];
+        let string = parts[2];
+        this.setState({calendarKeys: this.state.calendarKeys.concat(id)});
+        AsyncStorage.setItem('@calendarKeys:key', JSON.stringify(this.state.calendarKeys));
         const googleEventsArray = JSON.parse(string).items;
-        AsyncStorage.setItem('@googleCalendar:key', string);
+        AsyncStorage.setItem(id, string);
         for (let e of googleEventsArray) {
           try {
             let event = Event.formatGoogle(e);
@@ -131,26 +149,26 @@ export default class MyPlenR extends Component<Props> {
     }
   }
 
-  retrieveGoogleEventsFromCache() {
-    let value = AsyncStorage.getItem("@googleCalendar:key");
-    value.then((string) => {
-      let googleEventsArray = JSON.parse(string).items;
-      for (let e of googleEventsArray) {
-        try {
-          let event = Event.formatGoogle(e);
-          this.setState({
-            local_events: this.state.local_events.add(event)
-          });
-        } catch (error) {
-          console.log(error);
-          continue;
-        }
-      }
-    }).catch((error) => {
-      console.log(error);
-    }).finally(() => {
-      this.props.navigator.dismissLightBox();
+  retrieveGoogleEventsFromCache(calendarKeys) {
+    let calendarPromises = calendarKeys.map((key) => {
+      return AsyncStorage.getItem(key);
     })
+    let reducer = (accum, currVal) => accum.concat(currVal);
+    Promise.all(calendarPromises)
+      .then((strings) => {
+        strings.map((string) => {
+          return JSON.parse(string).items;
+        })
+        .reduce(reducer, [])
+        .forEach((event) => {
+          let formattedEvent = Event.formatGoogle(event);
+          this.setState({local_events: this.state.local_events.add(formattedEvent)});
+        })
+      }).catch((error) => {
+        console.log(error);
+      }).finally(() => {
+        this.props.navigator.dismissLightBox();
+      })
   }
 
   retrieveEventsForDay(day) {

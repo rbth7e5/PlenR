@@ -5,6 +5,7 @@ import firebase from 'react-native-firebase';
 import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
+import Calendar from '../util/Calendar';
 
 export default class GoogleLogin extends Component<Props> {
   constructor(props) {
@@ -174,6 +175,7 @@ export default class GoogleLogin extends Component<Props> {
               calendar={calendar}
               user={this.state.user}
               onRetrieveEvents={this.props.onRetrieveEvents}
+              navigator={this.props.navigator}
             />
           );
         })}
@@ -181,71 +183,6 @@ export default class GoogleLogin extends Component<Props> {
         </ScrollView>
       );
     }
-  }
-}
-
-class Calendar extends Component<Props> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      retrievingEvents: false,
-      retrieved: false
-    }
-  }
-  getEventsFromCalendar = async () => {
-    this.setState({
-      retrievingEvents: true,
-    });
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = (e) => {
-      if (request.readyState !== 4) {
-        return;
-      }
-      if (request.status === 200) {
-        console.log('success', request.responseText);
-        const eventsList = JSON.parse(request.responseText);
-        this.setState({
-          retrievingEvents: false,
-          retrieved: true
-        })
-        this.props.onRetrieveEvents(request.responseText);
-      } else {
-        alert('Sync Failed');
-        this.setState({
-          retrievingEvents: false,
-          retrieved: false,
-        });
-      }
-    };
-    request.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/'+this.props.calendar.id+'/events?access_token='+this.props.user.accessToken
-        + '&timeMin=' + moment().subtract(2, 'months').utc().format().toString());
-    request.send();
-  }
-
-  renderActivity() {
-    if (this.state.retrievingEvents) {
-      return <ActivityIndicator size='small' color='#aaaaaa'/>
-    } else {
-      if (this.state.retrieved) {
-        return <Text>Synced</Text>
-      }
-      else return <Text>Not Synced</Text>
-    }
-  }
-
-  render() {
-    return (
-      <TouchableHighlight onPress={this.getEventsFromCalendar}>
-      <View style={styles.calendar_container}>
-        <View style={styles.activity}>
-          {this.renderActivity()}
-        </View>
-        <View style={styles.calendar_title}>
-          <Text style={styles.calendar_text}>{this.props.calendar.summary}</Text>
-        </View>
-      </View>
-      </TouchableHighlight>
-    )
   }
 }
 
@@ -257,14 +194,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: '#f5f5f5'
   },
-  calendar_container: {
-    height: 50,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f5f5f5',
-  },
+
   signin: {
     flex: 1,
     alignItems: 'center',
@@ -274,20 +204,5 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: '#aaaaaa'
   },
-  activity: {
-    width: 85,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRightWidth: 2,
-    borderColor: '#999'
-  },
-  calendar_title: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  calendar_text: {
-    fontSize: 17,
-    padding: 10,
-  }
+
 })

@@ -9,6 +9,7 @@ import Profile from './Profile';
 import Notifications from './Notifications';
 import GoogleLogin from './GoogleLogin';
 import Loading from './Loading';
+import Calendar from '../util/Calendar';
 
 export function registerScreens(store, Provider) {
   Navigation.registerComponent('PlenR.MyPlenR', () => MyPlenR, store, Provider);
@@ -20,4 +21,5 @@ export function registerScreens(store, Provider) {
   Navigation.registerComponent('PlenR.Notifications', () => Notifications, store, Provider);
   Navigation.registerComponent('PlenR.GoogleLogin', () => GoogleLogin, store, Provider);
   Navigation.registerComponent('PlenR.Loading', () => Loading);
+  Navigation.registerComponent('PlenR.Calendar', () => Calendar, store, Provider);
 }

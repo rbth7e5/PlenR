@@ -21,9 +21,9 @@ export default class Profile extends Component<Props> {
     }
   }
 
-  handleEvents = (events_unparsed) => {
+  handleEvents = (calendarID, events_unparsed) => {
     this.props.navigator.handleDeepLink({
-      link: 'googleEvents`' + events_unparsed,
+      link: 'googleEvents`' + calendarID + '`' + events_unparsed,
     });
   }
 
