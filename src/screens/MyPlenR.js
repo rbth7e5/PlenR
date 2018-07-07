@@ -130,7 +130,9 @@ export default class MyPlenR extends Component<Props> {
       if (parts[0] == 'googleEvents') {
         let id = parts[1];
         let string = parts[2];
-        this.setState({calendarKeys: this.state.calendarKeys.concat(id)});
+        if (!this.state.calendarKeys.includes(id)) {
+          this.setState({calendarKeys: this.state.calendarKeys.concat(id)});
+        }
         AsyncStorage.setItem('@calendarKeys:key', JSON.stringify(this.state.calendarKeys));
         const googleEventsArray = JSON.parse(string).items;
         AsyncStorage.setItem(id, string);
