@@ -5,7 +5,7 @@ import firebase from 'react-native-firebase';
 import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
-import Calendar from '../util/Calendar';
+import CalendarBox from '../util/CalendarBox';
 
 export default class GoogleLogin extends Component<Props> {
   constructor(props) {
@@ -170,7 +170,7 @@ export default class GoogleLogin extends Component<Props> {
         <View style={styles.container}>
         {this.state.calendarListArray.map((calendar) => {
           return (
-            <Calendar
+            <CalendarBox
               key={calendar.id}
               calendar={calendar}
               user={this.state.user}

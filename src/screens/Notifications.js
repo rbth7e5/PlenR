@@ -7,7 +7,10 @@ import {
   ScrollView,
   Button,
   TouchableHighlight,
+  FlatList,
 } from 'react-native';
+
+import CalendarMonthView from '../util/CalendarMonthView';
 
 export default class Notifications extends Component<Props> {
   static navigatorStyle = {
@@ -16,15 +19,12 @@ export default class Notifications extends Component<Props> {
   }
   render() {
     return (
-      <ScrollView>
-        <View style={styles.container}>
-          <Text>Test</Text>
-        </View>
-      </ScrollView>
+      <View style={styles.container}>
+        <CalendarMonthView year={2018} month={6}/>
+      </View>
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {

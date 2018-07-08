@@ -17,6 +17,7 @@ import AddEvent from './AddEvent';
 import EventDetails from './EventDetails';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
+import CalendarMonthView from '../util/CalendarMonthView';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -52,7 +53,7 @@ export default class MyPlenR extends Component<Props> {
     leftButtons: [
       {
         id: 'delete cache',
-        title: 'Delete Cache'
+        systemItem: 'trash'
       },
     ]
   };
@@ -64,7 +65,6 @@ export default class MyPlenR extends Component<Props> {
       year: today.getFullYear(),
       month: today.getMonth(),
       day_selected: today.getDate(),
-      weekends: 6,
       local_events: new SortedList(Event.eventComparator),
       retrievingEvents: true,
       calendarKeys: [],
@@ -223,81 +223,7 @@ export default class MyPlenR extends Component<Props> {
         .toArray();
   }
 
-  isToday(day) {
-    var today = new Date();
-    return (this.state.year == today.getFullYear()
-      && this.state.month == today.getMonth()
-      && day == today.getDate());
-  }
-
-  formatDate(day){
-    this.state.weekends = (this.state.weekends+1)%7;
-    if (day < 0) {
-      return (
-        <View key={day} style={styles.sibling_view}>
-          <Text style={styles.sibling_text}>{-day}</Text>
-        </View>
-      )
-    } else if (this.state.day_selected == day) {
-      if (this.isToday(day)) {
-        return (
-          <View key={day} style={styles.selected_view}>
-            <Text style={styles.today}>{day}</Text>
-          </View>
-        )
-      }
-      return (
-        <View key={day} style={styles.selected_view}>
-          <Text style={styles.selected_text}>{day}</Text>
-        </View>
-      )
-    } else if (this.isToday(day)) {
-      return (
-        <TouchableHighlight
-          key={day} onPress={() => {
-              this.setState({day_selected: day});
-            }
-          }
-          style={styles.touchable_today}
-          underlayColor="#fff"
-        >
-          <Text key={day} style={styles.today}>{day}</Text>
-        </TouchableHighlight>
-      )
-    } else if (this.state.weekends == 0 || this.state.weekends == 6) {
-      return (
-        <TouchableHighlight
-          key={day} onPress={() => {
-              this.setState({day_selected: day});
-            }
-          }
-          style={styles.touchable_days}
-          underlayColor="#fff"
-        >
-          <Text style={styles.weekend_text}>{day}</Text>
-        </TouchableHighlight>
-      )
-    } else {
-      return (
-        <TouchableHighlight
-          key={day} onPress={() => {
-              this.setState({day_selected: day});
-            }
-          }
-          style={styles.touchable_days}
-          underlayColor="#fff"
-        >
-          <Text style={styles.day_text}>{day}</Text>
-        </TouchableHighlight>
-      )
-    }
-  }
-
   render() {
-    var monthArray = calendar(new Date(this.state.year, this.state.month), {
-      formatDate: date => date.getDate(),
-      formatSiblingMonthDate: date => -date.getDate()
-    });
     var today = new Date();
     return (
       <ScrollView>
@@ -359,16 +285,13 @@ export default class MyPlenR extends Component<Props> {
               />
             </View>
           </View>
-          <View style={styles.weekday}>
-            {weekDays.map((day) => {
-                return(<Text key={day} style={styles.weekday_text}>{day}</Text>);
-              })}
-          </View>
-          {monthArray.map((week) => {
-            return(<View key={week} style={styles.weeks}>{week.map((day) => {
-              return this.formatDate(day);
-            })}</View>);
-          })}
+          <CalendarMonthView
+            year={this.state.year}
+            month={this.state.month}
+            onDaySelect={(day_selected) => {
+              this.setState({day_selected: day_selected});
+            }}
+          />
           <View style={styles.gap}></View>
           <View style={styles.events}>
             {this.renderRetrievedEvents(this.retrieveEventsForDay(this.state.day_selected), this.state.day_selected)}
@@ -380,10 +303,6 @@ export default class MyPlenR extends Component<Props> {
 }
 
 var moment = require('moment');
-
-var calendar = require('calendar-month-array');
-
-const weekDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August",
   "September", "October", "November", "December"];
@@ -426,67 +345,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#000',
     marginRight: 0,
-  },
-  weekday: {
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingTop: 2,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#F5F5F5',
-  },
-  weekday_text: {
-    fontSize: 13,
-    textAlign: 'center',
-    flex: 1,
-    padding: 5
-  },
-  weeks: {
-    paddingLeft: 15,
-    paddingRight: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    height: 50,
-    backgroundColor: '#f5f5f5',
-  },
-  today: {
-    fontWeight: 'bold',
-    fontSize: 17,
-  },
-  selected_text: {
-    fontSize: 17,
-  },
-  sibling_text: {
-    color: '#A9A9A9',
-    fontSize: 17,
-  },
-  day_text: {
-    fontSize: 17,
-  },
-  weekend_text: {
-    color: '#0077ff',
-    fontSize: 17,
-  },
-  touchable_today: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  touchable_days: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  sibling_view: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  selected_view: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    backgroundColor: '#fff',
   },
   events: {
     backgroundColor: '#fff',

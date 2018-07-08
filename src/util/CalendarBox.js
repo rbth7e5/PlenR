@@ -11,7 +11,7 @@ import {
   AsyncStorage,
 } from 'react-native';
 
-export default class Calendar extends Component<Props> {
+export default class CalendarBox extends Component<Props> {
   constructor(props) {
     super(props);
     this.state = {
