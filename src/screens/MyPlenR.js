@@ -9,7 +9,8 @@ import {
   Button,
   TouchableHighlight,
   AsyncStorage,
-  ActivityIndicator
+  ActivityIndicator,
+  FlatList
 } from 'react-native';
 
 import EventBox from '../util/EventBox';
@@ -60,14 +61,32 @@ export default class MyPlenR extends Component<Props> {
 
   constructor(props) {
     super(props);
-    var today = new Date();
+    let prevMonth = today.clone().subtract(1, 'months');
+    let nextMonth = today.clone().add(1, 'months');
     this.state = {
-      year: today.getFullYear(),
-      month: today.getMonth(),
-      day_selected: today.getDate(),
+      currentTime: today,
+      day_selected: today.date(),
       local_events: new SortedList(Event.eventComparator),
       retrievingEvents: true,
       calendarKeys: [],
+      scrollOffset: 300,
+      yearMonthData: [
+        {
+          key: prevMonth.format("MMMM YYYY"),
+          month: prevMonth.month(),
+          year: prevMonth.year(),
+        },
+        {
+          key: today.format("MMMM YYYY"),
+          month: today.month(),
+          year: today.year(),
+        },
+        {
+          key: nextMonth.format("MMMM YYYY"),
+          month: nextMonth.month(),
+          year: nextMonth.year(),
+        },
+      ]
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -102,8 +121,8 @@ export default class MyPlenR extends Component<Props> {
           title: 'Add Event',
           animationType: 'slide-up',
           passProps: {
-            year_selected: this.state.year,
-            month_selected: this.state.month,
+            year_selected: this.state.currentTime.year(),
+            month_selected: this.state.currentTime.month(),
             day_selected: this.state.day_selected,
             onAddEvent: (data) => this.setState({
               local_events: this.state.local_events.add(data)
@@ -174,10 +193,10 @@ export default class MyPlenR extends Component<Props> {
   }
 
   retrieveEventsForDay(day) {
-    let currentDay = moment(new Date(this.state.year, this.state.month, day));
+    let currentDay = moment(new Date(this.state.currentTime.year(), this.state.currentTime.month(), day));
     return this.state.local_events.filter((event) => {
-      if (event.start.getFullYear() == this.state.year
-          && event.start.getMonth() == this.state.month
+      if (event.start.getFullYear() == this.state.currentTime.year()
+          && event.start.getMonth() == this.state.currentTime.month()
           && event.start.getDate() == day) {
         return true;
       } else if (currentDay.isBetween(event.start, event.end, 'minute', '[)')) {
@@ -187,7 +206,7 @@ export default class MyPlenR extends Component<Props> {
   }
 
   renderRetrievedEvents(retrievedEvents, day_selected) {
-    let date_selected = new Date(this.state.year, this.state.month, day_selected);
+    let date_selected = new Date(this.state.currentTime.year(), this.state.currentTime.month(), day_selected);
     if (retrievedEvents.isEmpty()) {
       return (
         [<View key={-1} style={styles.empty_view}>
@@ -223,86 +242,88 @@ export default class MyPlenR extends Component<Props> {
         .toArray();
   }
 
+  checkIfCalendarDataExists(data) {
+    for (let cal of this.state.yearMonthData) {
+      if (cal.key == data.key) {
+        return this.state.yearMonthData;
+      }
+    }
+    return this.state.yearMonthData.concat(data);
+  }
+
+  handlePageChange = (event) => {
+    let currentOffset = event.nativeEvent.contentOffset.y;
+    let diff = currentOffset - (this.state.scrollOffset || 0);
+    let prevMonth = this.state.currentTime.clone().subtract(1, 'months');
+    let nextMonth = this.state.currentTime.clone().add(1, 'months');
+    let futureMonth = {
+      key: nextMonth.clone().add(1, 'months').format("MMMM YYYY"),
+      month: nextMonth.clone().add(1, 'months').month(),
+      year: nextMonth.clone().add(1, 'months').year(),
+    };
+    let pastMonth = {
+      key: prevMonth.clone().subtract(1, 'months').format("MMMM YYYY"),
+      month: prevMonth.clone().subtract(1, 'months').month(),
+      year: prevMonth.clone().subtract(1, 'months').year(),
+    };
+    if (Math.abs(diff) < 3) {
+      console.log('scrolldirection unclear');
+    } else if (diff > 0) {
+      this.setState({
+        scrollOffset: currentOffset,
+        day_selected: (nextMonth.month() == today.month()) ? today.date() : 1,
+        currentTime: nextMonth,
+        yearMonthData: this.checkIfCalendarDataExists(futureMonth),
+      });
+      this.props.navigator.setTitle({title: monthNames[nextMonth.month()]});
+      this.props.navigator.setSubTitle({subtitle: nextMonth.year().toString()});
+    } else {
+      this.setState({
+        scrollOffset: currentOffset,
+        day_selected: (prevMonth.month() == today.month()) ? today.date() : 1,
+        currentTime: prevMonth,
+      });
+      this.props.navigator.setTitle({title: monthNames[prevMonth.month()],});
+      this.props.navigator.setSubTitle({subtitle: prevMonth.year().toString()});
+    }
+  }
+
   render() {
-    var today = new Date();
     return (
-      <ScrollView>
-        <View style={styles.container}>
-          <View style={styles.picker}>
-            <View style={styles.picker_item}>
-              <Icon.Button
-                onPress={() => {
-                  this.setState({
-                    day_selected: (this.state.month+11)%12 == today.getMonth() ? today.getDate() : 1,
-                    month: (this.state.month + 11)%12,
-                  })
-
-                }}
-                name = "chevron-left"
-                backgroundColor = "#fff"
-                iconStyle = {styles.picker_icon}
-              />
-              <Text style={styles.picker_text}>{monthNames[this.state.month]}</Text>
-              <Icon.Button
-                onPress={() => {
-                  this.setState({
-                    day_selected: (this.state.month+1)%12 == today.getMonth() ? today.getDate() : 1,
-                    month: (this.state.month + 1)%12,
-
-                  })
-                }}
-                name = "chevron-right"
-                backgroundColor = "#fff"
-                iconStyle = {styles.picker_icon}
-              />
-            </View>
-            <View style={styles.picker_item}>
-              <Icon.Button
-                onPress={() => {
-                  this.setState({
-                    day_selected: (this.state.year+9998)%9999 == today.getFullYear() ? today.getDate() : 1,
-                    year: (this.state.year + 9998)%9999,
-
-                  })
-
-                }}
-                name = "chevron-left"
-                backgroundColor = "#fff"
-                iconStyle = {styles.picker_icon}
-              />
-              <Text style={styles.picker_text}>{this.state.year}</Text>
-              <Icon.Button
-                onPress={() => {
-                  this.setState({
-                    day_selected: (this.state.year+1)%9999 == today.getFullYear() ? today.getDate() : 1,
-                    year: (this.state.year + 1)%9999,
-
-                  })
-                }}
-                name = "chevron-right"
-                backgroundColor = "#fff"
-                iconStyle = {styles.picker_icon}
-              />
-            </View>
-          </View>
-          <CalendarMonthView
-            year={this.state.year}
-            month={this.state.month}
-            onDaySelect={(day_selected) => {
-              this.setState({day_selected: day_selected});
-            }}
+      <View style={styles.container}>
+        <View style={styles.calendar_month_view}>
+          <FlatList
+            getItemLayout={(data, index) => (
+              {length: 300, offset: 300 * index, index}
+            )}
+            initialScrollIndex={1}
+            onMomentumScrollEnd={this.handlePageChange}
+            showsVerticalScrollIndicator={false}
+            pagingEnabled={true}
+            data={this.state.yearMonthData}
+            renderItem={({item}) => <CalendarMonthView
+              year={item.year}
+              month={item.month}
+              onDaySelect={(day_selected) => {
+                this.setState({day_selected: day_selected});
+              }}
+              day_selected={item.month == this.state.currentTime.month() ? this.state.day_selected : 1}
+            />}
           />
-          <View style={styles.gap}></View>
+        </View>
+        <ScrollView style={styles.events_view}>
           <View style={styles.events}>
             {this.renderRetrievedEvents(this.retrieveEventsForDay(this.state.day_selected), this.state.day_selected)}
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     );
   }
 }
 
 var moment = require('moment');
+
+var today = moment();
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August",
   "September", "October", "November", "December"];
@@ -316,35 +337,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'flex-start'
   },
   navigation_icon: {
     flex: 1,
     marginRight: 0,
   },
-  picker: {
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingBottom: 2,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-  },
-  picker_item: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    flex: 1,
-  },
-  picker_text: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    width: 100,
-    textAlign: 'center',
-  },
-  picker_icon: {
-    fontSize: 15,
-    color: '#000',
-    marginRight: 0,
+  calendar_month_view: {
+    height: 300,
   },
   events: {
     backgroundColor: '#fff',
@@ -359,8 +358,7 @@ const styles = StyleSheet.create({
     padding: 15,
     fontSize: 15,
   },
-  gap: {
-    height: 15,
-    backgroundColor: '#f5f5f5',
-  }
+  events_view: {
+    flex: 1,
+  },
 });

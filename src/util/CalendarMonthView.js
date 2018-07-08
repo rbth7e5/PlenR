@@ -14,7 +14,7 @@ export default class CalendarMonthView extends Component<Props> {
     super(props);
     this.state = {
       weekends: 6,
-      day_selected: new Date().getDate()
+      day_selected: this.props.day_selected
     }
   }
 
@@ -113,12 +113,12 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
+    height: 300,
   },
   weekday: {
     paddingLeft: 15,
     paddingRight: 15,
-    paddingTop: 2,
+    paddingTop: 5,
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: '#F5F5F5',
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    height: 50,
+    flex: 1,
     backgroundColor: '#f5f5f5',
   },
   sibling_view: {

@@ -12,14 +12,21 @@ import { Provider } from 'react-redux';
 
 registerScreens(store, Provider);
 
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August",
+  "September", "October", "November", "December"];
+
 Navigation.startTabBasedApp({
   tabs: [
     {
       label: 'My PlenR',
       screen: 'PlenR.MyPlenR',
-      title: 'My PlenR',
+      title: monthNames[new Date().getMonth()],
+      subtitle: new Date().getFullYear().toString(),
       icon: require('./icons/calendar.png'),
       selectedIcon: require('./icons/calendar_selected.png'),
+      navigatorStyle: {
+        navBarSubtitleFontSize: 13,
+      }
     },
     {
       label: 'Profile',
