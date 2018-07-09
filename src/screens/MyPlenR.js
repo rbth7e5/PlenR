@@ -10,7 +10,7 @@ import {
   TouchableHighlight,
   AsyncStorage,
   ActivityIndicator,
-  FlatList
+  VirtualizedList
 } from 'react-native';
 
 import EventBox from '../components/EventBox';
@@ -19,11 +19,9 @@ import EventDetails from './EventDetails';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
 import CalendarMonthView from '../components/CalendarMonthView';
+import Calendar from '../util/Calendar';
 
 export default class MyPlenR extends Component<Props> {
-  static navigatorStyle = {
-    navBarNoBorder: true,
-  };
   static navigatorButtons = {
     rightButtons: [
       {
@@ -61,30 +59,16 @@ export default class MyPlenR extends Component<Props> {
     super(props);
     let prevMonth = today.clone().subtract(1, 'months');
     let nextMonth = today.clone().add(1, 'months');
+    let data = Calendar.generateYearMonthData(moment({year: 1918, month: 0}), today.add(1, 'months'));
     this.state = {
-      currentTime: today,
+      currentTime: moment(),
       day_selected: today.date(),
       local_events: new SortedList(Event.eventComparator),
       retrievingEvents: true,
       calendarKeys: [],
-      scrollOffset: 300,
-      yearMonthData: [
-        {
-          key: prevMonth.format("MMMM YYYY"),
-          month: prevMonth.month(),
-          year: prevMonth.year(),
-        },
-        {
-          key: today.format("MMMM YYYY"),
-          month: today.month(),
-          year: today.year(),
-        },
-        {
-          key: nextMonth.format("MMMM YYYY"),
-          month: nextMonth.month(),
-          year: nextMonth.year(),
-        },
-      ]
+      scrollOffset: (data.length - 2) * 300,
+      yearMonthData: data,
+      lastRenderedYearMonth: today.add(2, 'months'),
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -252,49 +236,48 @@ export default class MyPlenR extends Component<Props> {
   handlePageChange = (event) => {
     let currentOffset = event.nativeEvent.contentOffset.y;
     let diff = currentOffset - (this.state.scrollOffset || 0);
-    let prevMonth = this.state.currentTime.clone().subtract(1, 'months');
-    let nextMonth = this.state.currentTime.clone().add(1, 'months');
+    let prevMonth = this.state.currentTime.clone().subtract(-diff/300, 'months').toDate();
+    let nextMonth = this.state.currentTime.clone().add(diff/300, 'months').toDate();
     let futureMonth = {
-      key: nextMonth.clone().add(1, 'months').format("MMMM YYYY"),
-      month: nextMonth.clone().add(1, 'months').month(),
-      year: nextMonth.clone().add(1, 'months').year(),
-    };
-    let pastMonth = {
-      key: prevMonth.clone().subtract(1, 'months').format("MMMM YYYY"),
-      month: prevMonth.clone().subtract(1, 'months').month(),
-      year: prevMonth.clone().subtract(1, 'months').year(),
+      key: moment(nextMonth).clone().add(1, 'months').format("MMMM YYYY"),
+      month: moment(nextMonth).clone().add(1, 'months').month(),
+      year: moment(nextMonth).clone().add(1, 'months').year(),
     };
     if (Math.abs(diff) < 3) {
       console.log('scrolldirection unclear');
-    } else if (diff > 0) {
+    } else if (diff > 150) {
       this.setState({
         scrollOffset: currentOffset,
-        day_selected: (nextMonth.month() == today.month()) ? today.date() : 1,
-        currentTime: nextMonth,
+        day_selected: (nextMonth.getMonth() == today.month()) ? today.date() : 1,
+        currentTime: moment(nextMonth),
         yearMonthData: this.checkIfCalendarDataExists(futureMonth),
       });
-      this.props.navigator.setTitle({title: monthNames[nextMonth.month()]});
-      this.props.navigator.setSubTitle({subtitle: nextMonth.year().toString()});
-    } else {
+    } else if (diff < -150) {
       this.setState({
         scrollOffset: currentOffset,
-        day_selected: (prevMonth.month() == today.month()) ? today.date() : 1,
-        currentTime: prevMonth,
+        day_selected: (prevMonth.getMonth() == today.month()) ? today.date() : 1,
+        currentTime: moment(prevMonth),
       });
-      this.props.navigator.setTitle({title: monthNames[prevMonth.month()],});
-      this.props.navigator.setSubTitle({subtitle: prevMonth.year().toString()});
     }
   }
 
   render() {
     return (
       <View style={styles.container}>
+        <View style={styles.navbar}>
+          <View style={styles.gap}></View>
+          <Text style={styles.month_title}>{monthNames[this.state.currentTime.month()]}</Text>
+          <Text>{this.state.currentTime.year()}</Text>
+        </View>
         <View style={styles.calendar_month_view}>
-          <FlatList
+          <VirtualizedList
+            getItem={(data, index) => data[index]}
+            getItemCount={(data) => data.length}
             getItemLayout={(data, index) => (
               {length: 300, offset: 300 * index, index}
             )}
-            initialScrollIndex={1}
+            initialScrollIndex={this.state.yearMonthData.length - 2}
+            initialNumToRender={5}
             onMomentumScrollEnd={this.handlePageChange}
             showsVerticalScrollIndicator={false}
             pagingEnabled={true}
@@ -331,6 +314,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  gap: {
+    height: 20,
+  },
+  navbar: {
+    height: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  month_title: {
+    fontWeight: 'bold',
+    fontSize: 17,
   },
   container: {
     flex: 1,

@@ -1,21 +1,33 @@
 export default class Calendar {
-  static generateYearMonthData() {
-    return [
-      {
-        key: "5 2018",
-        month: 5,
-        year: 2018,
-      },
-      {
-        key: "6 2018",
-        month: 6,
-        year: 2018,
-      },
-      {
-        key: "7 2018",
-        month: 7,
-        year: 2018,
-      },
-    ];
+  static generateYearMonthData(start, end) {
+    let month;
+    let year;
+    let startMonth = start.month();
+    let startYear = start.year();
+    let endMonth = end.month();
+    let endYear = end.year();
+    let dataArray = [];
+
+    for (month = startMonth; month < 12; month++) {
+      dataArray.push(Calendar.createYearMonthObj(month, startYear));
+    }
+    for (year = (startYear + 1); year < endYear; year++) {
+      for (month = 0; month < 12; month++) {
+        dataArray.push(Calendar.createYearMonthObj(month, year));
+      }
+    }
+    for (month = 0; month <= (endMonth); month++) {
+      dataArray.push(Calendar.createYearMonthObj(month, endYear));
+    }
+
+    return dataArray;
+  }
+
+  static createYearMonthObj(month, year) {
+    return {
+      key: month.toString() + year.toString(),
+      month: month,
+      year: year
+    }
   }
 }

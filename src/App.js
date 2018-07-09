@@ -20,12 +20,13 @@ Navigation.startTabBasedApp({
     {
       label: 'My PlenR',
       screen: 'PlenR.MyPlenR',
-      title: monthNames[new Date().getMonth()],
-      subtitle: new Date().getFullYear().toString(),
       icon: require('./icons/calendar.png'),
       selectedIcon: require('./icons/calendar_selected.png'),
       navigatorStyle: {
         navBarSubtitleFontSize: 13,
+        navBarTransparent: true,
+        navBarTranslucent: true,
+        drawUnderNavBar: true,
       }
     },
     {
