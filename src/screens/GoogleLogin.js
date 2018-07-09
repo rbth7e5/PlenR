@@ -5,7 +5,7 @@ import firebase from 'react-native-firebase';
 import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
-import CalendarBox from '../util/CalendarBox';
+import CalendarBox from '../components/CalendarBox';
 
 export default class GoogleLogin extends Component<Props> {
   constructor(props) {

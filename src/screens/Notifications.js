@@ -10,8 +10,6 @@ import {
   FlatList,
 } from 'react-native';
 
-import CalendarMonthView from '../util/CalendarMonthView';
-
 export default class Notifications extends Component<Props> {
   static navigatorStyle = {
     largeTitle: true,
@@ -20,7 +18,7 @@ export default class Notifications extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <CalendarMonthView year={2018} month={6}/>
+        <Text>Under Construction</Text>
       </View>
     );
   }

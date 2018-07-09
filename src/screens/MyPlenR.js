@@ -13,14 +13,12 @@ import {
   FlatList
 } from 'react-native';
 
-import EventBox from '../util/EventBox';
+import EventBox from '../components/EventBox';
 import AddEvent from './AddEvent';
 import EventDetails from './EventDetails';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
-import CalendarMonthView from '../util/CalendarMonthView';
-
-import Icon from 'react-native-vector-icons/FontAwesome';
+import CalendarMonthView from '../components/CalendarMonthView';
 
 export default class MyPlenR extends Component<Props> {
   static navigatorStyle = {

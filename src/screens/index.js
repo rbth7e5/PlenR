@@ -9,7 +9,7 @@ import Profile from './Profile';
 import Notifications from './Notifications';
 import GoogleLogin from './GoogleLogin';
 import Loading from './Loading';
-import CalendarBox from '../util/CalendarBox';
+import CalendarBox from '../components/CalendarBox';
 
 export function registerScreens(store, Provider) {
   Navigation.registerComponent('PlenR.MyPlenR', () => MyPlenR, store, Provider);
