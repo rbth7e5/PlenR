@@ -12,7 +12,6 @@ export default class GoogleLogin extends Component<Props> {
     super(props);
     this.state = {
       user: null,
-      error: null,
       calendarListArray: [],
       signingIn: false,
       retrievingCalendars: false,
@@ -54,9 +53,9 @@ export default class GoogleLogin extends Component<Props> {
   async getCurrentUser() {
     try {
       const user = await GoogleSignin.currentUserAsync();
-      this.setState({ user, error: null});
+      this.setState({ user });
     } catch (error) {
-      this.setState({ error, });
+      this.setState({ user: null });
     }
   }
 
@@ -66,24 +65,17 @@ export default class GoogleLogin extends Component<Props> {
         signingIn: true,
       })
       const data = await GoogleSignin.signIn();
-
       // create a new firebase credential with the token
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken)
       // login with credential
       const currentUser = await firebase.auth().signInAndRetrieveDataWithCredential(credential);
-
       this.setState({
         user: data,
-        error: null,
         signingIn: false,
       });
-
-      console.info(JSON.stringify(currentUser.user.toJSON()));
-
       this.getCalendarsFromGoogle();
     } catch (e) {
       this.setState({
-        error: e,
         signingIn: false,
       })
     }
@@ -99,10 +91,7 @@ export default class GoogleLogin extends Component<Props> {
         calendarListArray: []
       });
     } catch (error) {
-      this.setState({
-        error: error,
-      });
-      console.error(error);
+      alert('signing out failed!')
     }
   }
 
@@ -114,7 +103,6 @@ export default class GoogleLogin extends Component<Props> {
         return;
       }
       if (request.status === 200) {
-        console.log('success', request.responseText);
         this.setState({events: request.responseText});
         const calendarList = JSON.parse(request.responseText);
         this.setState({
@@ -123,7 +111,6 @@ export default class GoogleLogin extends Component<Props> {
         });
       } else {
         this.setState({ retrievingCalendars: false });
-        console.warn('error');
       }
     };
     request.open('GET', 'https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token='+this.state.user.accessToken);

@@ -91,7 +91,7 @@ export default class MyPlenR extends Component<Props> {
           this.props.navigator.dismissLightBox();
         }
       }).catch((error) => {
-        console.log(error, 'failed to retrieve calendar keys');
+        this.props.navigator.dismissLightBox();
       })
   }
 
@@ -122,7 +122,7 @@ export default class MyPlenR extends Component<Props> {
       if (event.id == 'delete cache') {
         AsyncStorage.clear()
           .catch((error) => {
-            console.log(error)
+            alert('error deleting cache');
           });
       }
     }
@@ -144,7 +144,6 @@ export default class MyPlenR extends Component<Props> {
               local_events: this.state.local_events.add(event)
             });
           } catch (error) {
-            console.log(error);
             continue;
           }
         }
@@ -168,14 +167,14 @@ export default class MyPlenR extends Component<Props> {
           this.setState({local_events: this.state.local_events.add(formattedEvent)});
         })
       }).catch((error) => {
-        console.log(error);
+        alert('event unsupported');
       }).finally(() => {
         this.props.navigator.dismissLightBox();
       })
   }
 
   retrieveEventsForDay(day) {
-    let currentDay = moment(new Date(this.state.currentTime.year(), this.state.currentTime.month(), day));
+    let currentDay = this.state.currentTime.clone().date(day);
     return this.state.local_events.filter((event) => {
       if (event.start.getFullYear() == this.state.currentTime.year()
           && event.start.getMonth() == this.state.currentTime.month()
@@ -243,19 +242,15 @@ export default class MyPlenR extends Component<Props> {
       month: moment(nextMonth).clone().add(1, 'months').month(),
       year: moment(nextMonth).clone().add(1, 'months').year(),
     };
-    if (Math.abs(diff) < 3) {
-      console.log('scrolldirection unclear');
-    } else if (diff > 150) {
+    if (diff > 160) {
       this.setState({
         scrollOffset: currentOffset,
-        day_selected: (nextMonth.getMonth() == today.month()) ? today.date() : 1,
         currentTime: moment(nextMonth),
         yearMonthData: this.checkIfCalendarDataExists(futureMonth),
       });
-    } else if (diff < -150) {
+    } else if (diff < -160) {
       this.setState({
         scrollOffset: currentOffset,
-        day_selected: (prevMonth.getMonth() == today.month()) ? today.date() : 1,
         currentTime: moment(prevMonth),
       });
     }
