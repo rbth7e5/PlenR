@@ -54,7 +54,12 @@ export default class CalendarMonthView extends PureComponent<Props> {
     } else if (this.isToday(day)) {
       return (
         <TouchableHighlight
-          key={day} onPress={() => this.setAndReportDaySelected(day)}
+          key={day}
+          onPress={() => {
+            window.requestAnimationFrame(() => {
+              this.setAndReportDaySelected(day);
+            });
+          }}
           style={styles.touchable_today}
           underlayColor="#fff"
         >
@@ -64,7 +69,12 @@ export default class CalendarMonthView extends PureComponent<Props> {
     } else if (this.state.weekends == 0 || this.state.weekends == 6) {
       return (
         <TouchableHighlight
-          key={day} onPress={() => this.setAndReportDaySelected(day)}
+          key={day}
+          onPress={() => {
+            window.requestAnimationFrame(() => {
+              this.setAndReportDaySelected(day);
+            });
+          }}
           style={styles.touchable_days}
           underlayColor="#fff"
         >
@@ -74,7 +84,12 @@ export default class CalendarMonthView extends PureComponent<Props> {
     } else {
       return (
         <TouchableHighlight
-          key={day} onPress={() => this.setAndReportDaySelected(day)}
+          key={day}
+          onPress={() => {
+            window.requestAnimationFrame(() => {
+              this.setAndReportDaySelected(day);
+            });
+          }}
           style={styles.touchable_days}
           underlayColor="#fff"
         >

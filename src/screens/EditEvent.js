@@ -176,10 +176,12 @@ export default class EditEvent extends Component<Props> {
           <View style={styles.timing}>
             <TouchableHighlight
               onPress={() => {
-                LayoutAnimation.configureNext(pickerAnimationSetting);
-                this.setState({
-                  dateStartPickerVisible: !this.state.dateStartPickerVisible,
-                  dateEndPickerVisible: false
+                window.requestAnimationFrame(() => {
+                  LayoutAnimation.configureNext(pickerAnimationSetting);
+                  this.setState({
+                    dateStartPickerVisible: !this.state.dateStartPickerVisible,
+                    dateEndPickerVisible: false
+                  });
                 });
               }}
             >
@@ -194,10 +196,12 @@ export default class EditEvent extends Component<Props> {
             {this.renderStartDatePicker()}
             <TouchableHighlight
               onPress={() => {
-                LayoutAnimation.configureNext(pickerAnimationSetting);
-                this.setState({
-                  dateEndPickerVisible: !this.state.dateEndPickerVisible,
-                  dateStartPickerVisible: false
+                window.requestAnimationFrame(() => {
+                  LayoutAnimation.configureNext(pickerAnimationSetting);
+                  this.setState({
+                    dateEndPickerVisible: !this.state.dateEndPickerVisible,
+                    dateStartPickerVisible: false
+                  });
                 });
               }}
             >
