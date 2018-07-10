@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import {
   StyleSheet,
@@ -15,7 +15,7 @@ import {
 
 import Event from '../util/Event';
 
-export default class AddEvent extends Component<Props> {
+export default class AddEvent extends PureComponent<Props> {
   static navigatorStyle = {
     navBarNoBorder: true,
   };

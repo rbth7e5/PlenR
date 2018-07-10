@@ -57,18 +57,17 @@ export default class MyPlenR extends Component<Props> {
 
   constructor(props) {
     super(props);
+    let today = moment();
     let prevMonth = today.clone().subtract(1, 'months');
     let nextMonth = today.clone().add(1, 'months');
-    let data = Calendar.generateYearMonthData(moment({year: 1918, month: 0}), today.add(1, 'months'));
+    let data = Calendar.generateYearMonthData(moment({year: 1918, month: 0}), today.clone().add(1, 'months'));
     this.state = {
-      currentTime: moment(),
-      day_selected: today.date(),
+      currentTime: today,
       local_events: new SortedList(Event.eventComparator),
       retrievingEvents: true,
       calendarKeys: [],
       scrollOffset: (data.length - 2) * 300,
       yearMonthData: data,
-      lastRenderedYearMonth: today.add(2, 'months'),
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -105,7 +104,7 @@ export default class MyPlenR extends Component<Props> {
           passProps: {
             year_selected: this.state.currentTime.year(),
             month_selected: this.state.currentTime.month(),
-            day_selected: this.state.day_selected,
+            day_selected: this.state.currentTime.date(),
             onAddEvent: (data) => this.setState({
               local_events: this.state.local_events.add(data)
             })
@@ -186,8 +185,7 @@ export default class MyPlenR extends Component<Props> {
     })
   }
 
-  renderRetrievedEvents(retrievedEvents, day_selected) {
-    let date_selected = new Date(this.state.currentTime.year(), this.state.currentTime.month(), day_selected);
+  renderRetrievedEvents(retrievedEvents) {
     if (retrievedEvents.isEmpty()) {
       return (
         [<View key={-1} style={styles.empty_view}>
@@ -217,7 +215,7 @@ export default class MyPlenR extends Component<Props> {
           }}
           underlayColor='#f5f5f5'
         >
-          <EventBox event={e} day_selected={date_selected}/>
+          <EventBox event={e} day_selected={this.state.currentTime.toDate()}/>
         </TouchableHighlight>
       )})
         .toArray();
@@ -281,15 +279,15 @@ export default class MyPlenR extends Component<Props> {
               year={item.year}
               month={item.month}
               onDaySelect={(day_selected) => {
-                this.setState({day_selected: day_selected});
+                this.setState({currentTime: this.state.currentTime.clone().date(day_selected)});
               }}
-              day_selected={item.month == this.state.currentTime.month() ? this.state.day_selected : 1}
+              day_selected={item.month == this.state.currentTime.month() ? this.state.currentTime.date() : 1}
             />}
           />
         </View>
         <ScrollView style={styles.events_view}>
           <View style={styles.events}>
-            {this.renderRetrievedEvents(this.retrieveEventsForDay(this.state.day_selected), this.state.day_selected)}
+            {this.renderRetrievedEvents(this.retrieveEventsForDay(this.state.currentTime.date()))}
           </View>
         </ScrollView>
       </View>
@@ -298,8 +296,6 @@ export default class MyPlenR extends Component<Props> {
 }
 
 var moment = require('moment');
-
-var today = moment();
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August",
   "September", "October", "November", "December"];

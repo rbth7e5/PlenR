@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import {
   StyleSheet,
@@ -11,7 +11,7 @@ import {
 
 import PropTypes from 'prop-types';
 
-export default class EventBox extends Component<Props> {
+export default class EventBox extends PureComponent<Props> {
   constructor(props) {
     super(props);
   }
@@ -30,7 +30,7 @@ export default class EventBox extends Component<Props> {
 }
 
 // TODO: CHECK FOR MONTH AND YEAR FOR MULTI DAY EVENTS.
-class TimeInfo extends Component<Props> {
+class TimeInfo extends PureComponent<Props> {
   formatDateAMPM(date) {
     var hours = date.getHours();
     var minutes = date.getMinutes();

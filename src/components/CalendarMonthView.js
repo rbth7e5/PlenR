@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import {
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
-export default class CalendarMonthView extends Component<Props> {
+export default class CalendarMonthView extends PureComponent<Props> {
   constructor(props) {
     super(props);
     this.state = {
