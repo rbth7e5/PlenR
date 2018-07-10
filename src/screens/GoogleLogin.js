@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import { GoogleSignin } from 'react-native-google-signin';
-import firebase from 'react-native-firebase';
 import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
@@ -65,10 +64,6 @@ export default class GoogleLogin extends Component<Props> {
         signingIn: true,
       })
       const data = await GoogleSignin.signIn();
-      // create a new firebase credential with the token
-      const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken)
-      // login with credential
-      const currentUser = await firebase.auth().signInAndRetrieveDataWithCredential(credential);
       this.setState({
         user: data,
         signingIn: false,
@@ -85,7 +80,6 @@ export default class GoogleLogin extends Component<Props> {
     try {
       await GoogleSignin.revokeAccess();
       await GoogleSignin.signOut();
-      await firebase.auth().signOut();
       this.setState({
         user: null,
         calendarListArray: []

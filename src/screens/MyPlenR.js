@@ -10,7 +10,8 @@ import {
   TouchableHighlight,
   AsyncStorage,
   ActivityIndicator,
-  VirtualizedList
+  VirtualizedList,
+  Alert,
 } from 'react-native';
 
 import EventBox from '../components/EventBox';
@@ -119,10 +120,19 @@ export default class MyPlenR extends Component<Props> {
         })
       }
       if (event.id == 'delete cache') {
-        AsyncStorage.clear()
-          .catch((error) => {
-            alert('error deleting cache');
-          });
+        Alert.alert(
+          'Confirm Cache Deletion',
+          '',
+          [
+            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+            {text: 'Confirm', onPress: () => {
+              AsyncStorage.clear()
+                .catch((error) => {
+                  alert('error deleting cache');
+                });
+            }},
+          ]
+        )
       }
     }
     if (event.type == 'DeepLink') {
@@ -198,19 +208,21 @@ export default class MyPlenR extends Component<Props> {
         <TouchableHighlight
           key={e.id}
           onPress={() => {
-            this.props.navigator.push({
-              screen: 'PlenR.EventDetails',
-              title: 'Event Details',
-              passProps: {
-                event: e,
-                onDeleteEvent: (event) => this.setState({
-                  local_events: this.state.local_events.delete(event)
-                }),
-                onAddEvent: (data) => this.setState({
-                  local_events: this.state.local_events.add(data)
-                })
-              },
-              animated: true,
+            window.requestAnimationFrame(() => {
+              this.props.navigator.push({
+                screen: 'PlenR.EventDetails',
+                title: 'Event Details',
+                passProps: {
+                  event: e,
+                  onDeleteEvent: (event) => this.setState({
+                    local_events: this.state.local_events.delete(event)
+                  }),
+                  onAddEvent: (data) => this.setState({
+                    local_events: this.state.local_events.add(data)
+                  })
+                },
+                animated: true,
+              });
             });
           }}
           underlayColor='#f5f5f5'

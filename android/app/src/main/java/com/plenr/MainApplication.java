@@ -4,20 +4,9 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.oblador.vectoricons.VectorIconsPackage;
-import com.reactnativenavigation.NavigationReactPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
-import com.rnfs.RNFSPackage;
-import io.invertase.firebase.RNFirebasePackage;
 import com.calendarevents.CalendarEventsPackage;
-import co.apptailor.googlesignin.RNGoogleSigninPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnativenavigation.bridge.NavigationReactPackage;
-import io.invertase.firebase.RNFirebasePackage;
-import com.calendarevents.CalendarEventsPackage;
-import com.calendarevents.CalendarEventsPackage;
-import io.invertase.firebase.RNFirebasePackage;
-import com.calendarevents.CalendarEventsPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -41,17 +30,10 @@ public class MainApplication extends NavigationApplication {
          // No need to add RnnPackage and MainReactPackage
          return Arrays.<ReactPackage>asList(
              // eg. new VectorIconsPackage()
-             // new MainReactPackage(),
-            new VectorIconsPackage(),
+            new MainReactPackage(),
+                 new VectorIconsPackage(),
             new NavigationReactPackage(),
             new RNGoogleSigninPackage(),
-            new RNFSPackage(),
-            new RNFirebasePackage(),
-            new CalendarEventsPackage(),
-            new RNGoogleSigninPackage(),
-            new VectorIconsPackage(),
-            new NavigationReactPackage(),
-            new RNFirebasePackage(),
             new CalendarEventsPackage()
          );
      }

@@ -17,7 +17,6 @@
     "react-native-cache": "^1.1.1",
     "react-native-calendar-events": "^1.6.1",
     "react-native-cli": "^2.0.1",
-    "react-native-firebase": "^4.2.0",
     "react-native-form-generator": "git+https://github.com/MichaelCereda/react-native-form-generator.git",
     "react-native-fs": "^2.10.14",
     "react-native-google-signin": "^0.12.0",
