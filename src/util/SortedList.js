@@ -100,5 +100,21 @@ export default class SortedList {
       return this.tail.filter(predicate);
     }
   }
+
+  static merge(list1, list2) {
+    let newList = new SortedList(list1.compare);
+    if (list1.isEmpty()) {
+      return list2;
+    } else if (list2.isEmpty()) {
+      return list1;
+    } else if (newList.compare(list1.head, list2.head) <= 0) {
+      newList.head = list1.head;
+      newList.tail = SortedList.merge(list1.tail, list2);
+    } else {
+      newList.head = list2.head;
+      newList.tail = SortedList.merge(list1, list2.tail);
+    }
+    return newList;
+  }
 }
 
