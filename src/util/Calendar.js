@@ -30,8 +30,15 @@ export default class Calendar {
     });
   }
 
-  getID() {
-    return this.id;
+  static parse(string) {
+    let newCalendar = new Calendar({title: 'Main Calendar'});
+    let eventsArray = JSON.parse(string);
+    for (let event of eventsArray) {
+      let parsed = JSON.parse(event);
+      let newEvent = Event.localAdd(parsed);
+      newCalendar = newCalendar.addEvent(newEvent);
+    }
+    return newCalendar;
   }
 
   toJSON() {

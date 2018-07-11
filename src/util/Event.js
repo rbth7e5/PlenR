@@ -6,6 +6,7 @@ export default class Event {
     this.end = props.end;
     this.notes = props.notes;
     this.allday = props.allday;
+    this.isImported = false;
     this.id = idCreator();
   }
 
@@ -26,6 +27,21 @@ export default class Event {
       end: props.end,
       notes: props.notes,
       allday: props.allday,
+      isImported: true,
+    });
+    newEvent.id = props.id;
+    return newEvent;
+  }
+
+  static localAdd(props) {
+    let newEvent = new Event({
+      title: props.title,
+      location: props.location,
+      start: new Date(props.start),
+      end: new Date(props.end),
+      notes: props.notes,
+      allday: props.allday,
+      isImported: false,
     });
     newEvent.id = props.id;
     return newEvent;
@@ -66,6 +82,7 @@ export default class Event {
       end: this.end,
       notes: this.notes,
       allday: this.allday,
+      isImported: this.isImported
     });
     newEvent.id = this.id;
     return newEvent;
@@ -81,6 +98,19 @@ export default class Event {
     newEvent.allday = props.allday == null ? this.allday : props.allday;
     newEvent.id = this.id;
     return newEvent;
+  }
+
+  toJSON() {
+    return JSON.stringify({
+      title: this.title,
+      location: this.location,
+      start: this.start,
+      end: this.end,
+      notes: this.notes,
+      allday: this.allday,
+      id: this.id,
+      isImported: this.isImported
+    })
   }
 }
 

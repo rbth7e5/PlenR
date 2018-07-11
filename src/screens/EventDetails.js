@@ -41,24 +41,28 @@ export default class EventDetails extends Component<Props> {
   onNavigatorEvent(event) {
     if (event.type == 'NavBarButtonPress') {
       if (event.id == 'edit') {
-        this.props.navigator.showModal({
-          screen: 'PlenR.EditEvent',
-          title: 'Edit Event',
-          animationType: 'slide-up',
-          passProps: {
-            event: this.props.event,
-            onDeleteEvent: (event) => {
-              this.props.onDeleteEvent(event);
-              this.props.navigator.popToRoot();
-            },
-            onEditEvent: (event) => {
-              this.setState({
-                event: event,
-              });
-              this.props.onAddEvent(event);
+        if (this.state.event.isImported) {
+          alert('Sorry! Editing of Imported Events not supported yet!');
+        } else {
+          this.props.navigator.showModal({
+            screen: 'PlenR.EditEvent',
+            title: 'Edit Event',
+            animationType: 'slide-up',
+            passProps: {
+              event: this.props.event,
+              onDeleteEvent: (event) => {
+                this.props.onDeleteEvent(event);
+                this.props.navigator.popToRoot();
+              },
+              onEditEvent: (event) => {
+                this.setState({
+                  event: event,
+                });
+                this.props.onAddEvent(event);
+              }
             }
-          }
-        });
+          });
+        }  
       }
     }
   }

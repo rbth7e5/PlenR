@@ -69,6 +69,7 @@ export default class MyPlenR extends Component<Props> {
       calendarKeys: [],
       scrollOffset: (data.length - 2) * 300,
       yearMonthData: data,
+      local_calendar: new Calendar({title: 'Main Calendar'}),
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -81,6 +82,17 @@ export default class MyPlenR extends Component<Props> {
         tapBackgroundToDismiss: false,
       }
     });
+    AsyncStorage.getItem('@localCalendar:key')
+      .then((string) => {
+        if (string !== null) {
+          this.setState({local_calendar: Calendar.parse(string)});
+        } else {
+          this.props.navigator.dismissLightBox();
+        }
+      }).catch((error) => {
+        alert('error retrieving local events!');
+        this.props.navigator.dismissLightBox();
+      });
     AsyncStorage.getItem('@calendarKeys:key')
       .then((string) => {
         let calendarKeys = JSON.parse(string);
@@ -92,7 +104,7 @@ export default class MyPlenR extends Component<Props> {
         }
       }).catch((error) => {
         this.props.navigator.dismissLightBox();
-      })
+      });
   }
 
   onNavigatorEvent(event) {
@@ -106,9 +118,10 @@ export default class MyPlenR extends Component<Props> {
             year_selected: this.state.currentTime.year(),
             month_selected: this.state.currentTime.month(),
             day_selected: this.state.currentTime.date(),
-            onAddEvent: (data) => this.setState({
-              local_events: this.state.local_events.add(data)
-            })
+            onAddEvent: (data) => {
+              this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
+              AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
+            }
           }
         });
       }
@@ -183,13 +196,19 @@ export default class MyPlenR extends Component<Props> {
   }
 
   retrieveEventsForDay(day) {
-    let currentDay = this.state.currentTime.clone().date(day);
-    let retrievedEvents =  this.state.local_events.filter((event) => {
-      return moment(event.start).isSame(currentDay, 'day') ||
-          currentDay.isBetween(event.start, event.end, 'minute', '[)') ||
-          moment(event.end).isSame(currentDay, 'day');
-    })
-    return retrievedEvents;
+      let currentDay = this.state.currentTime.clone().date(day);
+      let retrievedEvents =  this.state.local_events.filter((event) => {
+        return moment(event.start).isSame(currentDay, 'day') ||
+            currentDay.isBetween(event.start, event.end, 'minute', '[)') ||
+            moment(event.end).isSame(currentDay, 'day');
+      })
+      try {
+        let localretrievedEvents = this.state.local_calendar.getEvents(currentDay);
+        retrievedEvents = SortedList.merge(localretrievedEvents, retrievedEvents)
+      } catch (error) {
+        console.log('local calendar has no events inside for that day')
+      }
+      return retrievedEvents;
   }
 
   renderRetrievedEvents(retrievedEvents) {
@@ -211,12 +230,14 @@ export default class MyPlenR extends Component<Props> {
                 title: 'Event Details',
                 passProps: {
                   event: e,
-                  onDeleteEvent: (event) => this.setState({
-                    local_events: this.state.local_events.delete(event)
-                  }),
-                  onAddEvent: (data) => this.setState({
-                    local_events: this.state.local_events.add(data)
-                  })
+                  onDeleteEvent: (event) => {
+                    this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
+                    AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
+                  },
+                  onAddEvent: (data) => {
+                    this.setState({local_calendar: this.state.local_calendar.addEvent(data)})
+                    AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
+                  }
                 },
                 animated: true,
               });
