@@ -69,6 +69,7 @@ export default class MyPlenR extends Component<Props> {
       calendarKeys: [],
       scrollOffset: (data.length - 2) * 300,
       yearMonthData: data,
+      local_calendar: new Calendar({title: 'main'}),
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -150,7 +151,7 @@ export default class MyPlenR extends Component<Props> {
           try {
             let event = Event.formatGoogle(e);
             this.setState({
-              local_events: this.state.local_events.add(event)
+              local_calendar: this.state.local_calendar.addEvent(event)
             });
           } catch (error) {
             continue;
@@ -185,13 +186,8 @@ export default class MyPlenR extends Component<Props> {
   retrieveEventsForDay(day) {
     let currentDay = this.state.currentTime.clone().date(day);
     return this.state.local_events.filter((event) => {
-      if (event.start.getFullYear() == this.state.currentTime.year()
-          && event.start.getMonth() == this.state.currentTime.month()
-          && event.start.getDate() == day) {
-        return true;
-      } else if (currentDay.isBetween(event.start, event.end, 'minute', '[)')) {
-        return true;
-      } else return false;
+      return moment(event.start).isSame(currentDay, 'day') ||
+          currentDay.isBetween(event.start, event.end, 'minute', '[)');
     })
   }
 
@@ -353,6 +349,8 @@ const styles = StyleSheet.create({
   empty_view_text: {
     padding: 15,
     fontSize: 15,
+    fontWeight: 'bold',
+    color: '#aaaaaa'
   },
   events_view: {
     flex: 1,

@@ -38,15 +38,23 @@ export default class GoogleLogin extends Component<Props> {
   }
 
   async configureGoogleSignIn() {
-    await GoogleSignin.configure({
-      ...Platform.select({
-        ios: {
+    await GoogleSignin.hasPlayServices({ autoResolve: true })
+      .then(() => {
+        GoogleSignin.configure({
           scopes: ['https://www.googleapis.com/auth/calendar'],
-          iosClientId: '330206970399-97010ppamcdbf16s2ajv341g22dl03hk.apps.googleusercontent.com'
-        },
-        android: {}
+          ...Platform.select({
+            ios: {
+              iosClientId: '330206970399-97010ppamcdbf16s2ajv341g22dl03hk.apps.googleusercontent.com'
+            },
+            android: {
+
+            }
+          })
+        });
       })
-    });
+      .catch((error) => {
+        alert('play services error');
+      });
   }
 
   async getCurrentUser() {
@@ -70,6 +78,7 @@ export default class GoogleLogin extends Component<Props> {
       });
       this.getCalendarsFromGoogle();
     } catch (e) {
+      console.warn(e, 'error is here');
       this.setState({
         signingIn: false,
       })
@@ -107,12 +116,21 @@ export default class GoogleLogin extends Component<Props> {
         this.setState({ retrievingCalendars: false });
       }
     };
-    request.open('GET', 'https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token='+this.state.user.accessToken);
+    Platform.OS === 'ios' ?
+    request.open('GET', 'https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token='+this.state.user.accessToken) :
+    GoogleSignin.getAccessToken()
+                  .then(token => {
+                    request.open('GET', 'https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token='+token);
+                  })
+                  .catch((error) => {
+                    alert('access denied');
+                  })
+
     request.send();
   }
 
   render() {
-    const { user, error } = this.state;
+    const user = this.state.user;
     if (!user) {
       this.props.navigator.setButtons({
         rightButtons: [{
@@ -182,7 +200,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   signin_text: {
-    fontSize: 17,
+    fontSize: 20,
+    fontWeight: 'bold',
     color: '#aaaaaa'
   },
 

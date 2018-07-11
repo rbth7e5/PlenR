@@ -1,4 +1,36 @@
+import Event from './Event';
+import SortedList from './SortedList';
+
 export default class Calendar {
+  constructor(props) {
+    this.title = props.title
+    this.id = idCreator();
+    this.eventsList = new SortedList(Event.eventComparator);
+  }
+
+  addEvent(event) {
+    this.eventsList.add(event);
+  }
+
+  deleteEvent(event) {
+    this.eventsList.delete(event);
+  }
+
+  getEvents(date) {
+    return this.eventsList.filter((event) => {
+      return moment(event.start).isSame(date, 'day') ||
+          date.isBetween(event.start, event.end, 'minute', '[)');
+    });
+  }
+
+  getID() {
+    return this.id;
+  }
+
+  toJSON() {
+    return JSON.stringify(this.eventsList.toArray());
+  }
+
   static generateYearMonthData(start, end) {
     let month;
     let year;
@@ -31,3 +63,6 @@ export default class Calendar {
     }
   }
 }
+
+var moment = require('moment');
+const idCreator = require('uuid/v4');
