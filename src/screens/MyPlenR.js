@@ -69,7 +69,6 @@ export default class MyPlenR extends Component<Props> {
       calendarKeys: [],
       scrollOffset: (data.length - 2) * 300,
       yearMonthData: data,
-      local_calendar: new Calendar({title: 'main'}),
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -151,7 +150,7 @@ export default class MyPlenR extends Component<Props> {
           try {
             let event = Event.formatGoogle(e);
             this.setState({
-              local_calendar: this.state.local_calendar.addEvent(event)
+              local_events: this.state.local_events.add(event)
             });
           } catch (error) {
             continue;
@@ -185,10 +184,12 @@ export default class MyPlenR extends Component<Props> {
 
   retrieveEventsForDay(day) {
     let currentDay = this.state.currentTime.clone().date(day);
-    return this.state.local_events.filter((event) => {
+    let retrievedEvents =  this.state.local_events.filter((event) => {
       return moment(event.start).isSame(currentDay, 'day') ||
-          currentDay.isBetween(event.start, event.end, 'minute', '[)');
+          currentDay.isBetween(event.start, event.end, 'minute', '[)') ||
+          moment(event.end).isSame(currentDay, 'day');
     })
+    return retrievedEvents;
   }
 
   renderRetrievedEvents(retrievedEvents) {
