@@ -9,11 +9,17 @@ export default class Calendar {
   }
 
   addEvent(event) {
-    this.eventsList.add(event);
+    newCalendar = new Calendar({title: this.title})
+    newCalendar.id = this.id;
+    newCalendar.eventsList = this.eventsList.add(event);
+    return newCalendar;
   }
 
   deleteEvent(event) {
-    this.eventsList.delete(event);
+    newCalendar = new Calendar({title: this.title})
+    newCalendar.id = this.id;
+    newCalendar.eventsList = this.eventsList.delete(event);
+    return newCalendar;
   }
 
   getEvents(date) {
