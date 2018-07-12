@@ -26,9 +26,9 @@ export default class Event {
       start: props.start,
       end: props.end,
       notes: props.notes,
-      allday: props.allday,
-      isImported: true,
+      allday: props.allday
     });
+    newEvent.isImported = true;
     newEvent.id = props.id;
     return newEvent;
   }

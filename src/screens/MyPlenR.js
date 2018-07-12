@@ -309,6 +309,7 @@ export default class MyPlenR extends Component<Props> {
               year={item.year}
               month={item.month}
               onDaySelect={(day_selected) => {
+                console.warn(day_selected);
                 this.setState({currentTime: this.state.currentTime.clone().date(day_selected)});
               }}
               day_selected={item.month == this.state.currentTime.month() ? this.state.currentTime.date() : 1}

@@ -233,6 +233,7 @@ export default class AddEvent extends PureComponent<Props> {
               placeholderTextColor = '#aaaaaa'
               onChangeText = {(text) => this.state.notes = text}
               style={styles.notes_text}
+              multiline={true}
             />
           </View>
         </ScrollView>

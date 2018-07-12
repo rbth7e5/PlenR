@@ -12,9 +12,6 @@ import { Provider } from 'react-redux';
 
 registerScreens(store, Provider);
 
-const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August",
-  "September", "October", "November", "December"];
-
 Navigation.startTabBasedApp({
   tabs: [
     {
@@ -57,7 +54,5 @@ function eventHandler(eventsArray = [], action) {
     return eventsArray
   }
 }
-
-
 
 const store = createStore(eventHandler);
