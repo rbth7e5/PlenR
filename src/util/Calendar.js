@@ -26,7 +26,7 @@ export default class Calendar {
     return this.eventsList.filter((event) => {
       return moment(event.start).isSame(date, 'day') ||
           date.isBetween(event.start, event.end, 'minute', '[)') ||
-          moment(event.end).isSame(currentDay, 'day');
+          moment(event.end).isSame(date, 'day');
     });
   }
 

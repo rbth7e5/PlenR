@@ -195,8 +195,8 @@ export default class MyPlenR extends Component<Props> {
       })
   }
 
-  retrieveEventsForDay(day) {
-      let currentDay = this.state.currentTime.clone().date(day);
+  retrieveEvents(day) {
+      let currentDay = day;
       let retrievedEvents =  this.state.local_events.filter((event) => {
         return moment(event.start).isSame(currentDay, 'day') ||
             currentDay.isBetween(event.start, event.end, 'minute', '[)') ||
@@ -206,7 +206,7 @@ export default class MyPlenR extends Component<Props> {
         let localretrievedEvents = this.state.local_calendar.getEvents(currentDay);
         retrievedEvents = SortedList.merge(localretrievedEvents, retrievedEvents)
       } catch (error) {
-        console.log('local calendar has no events inside for that day')
+        console.log('local calendar has no events inside for that day');
       }
       return retrievedEvents;
   }
@@ -309,7 +309,6 @@ export default class MyPlenR extends Component<Props> {
               year={item.year}
               month={item.month}
               onDaySelect={(day_selected) => {
-                console.warn(day_selected);
                 this.setState({currentTime: this.state.currentTime.clone().date(day_selected)});
               }}
               day_selected={item.month == this.state.currentTime.month() ? this.state.currentTime.date() : 1}
@@ -318,7 +317,7 @@ export default class MyPlenR extends Component<Props> {
         </View>
         <ScrollView style={styles.events_view}>
           <View style={styles.events}>
-            {this.renderRetrievedEvents(this.retrieveEventsForDay(this.state.currentTime.date()))}
+            {this.renderRetrievedEvents(this.retrieveEvents(this.state.currentTime))}
           </View>
         </ScrollView>
       </View>
