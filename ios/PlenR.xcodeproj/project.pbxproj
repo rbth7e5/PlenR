@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -48,11 +47,13 @@
 		96A2BC7320E4B6460079D522 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		A3BC5306D638B58078DEA943 /* libPods-PlenR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C6DECBBE92856C0A3C87814B /* libPods-PlenR.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
+		B8D3DBBF779548DB9B657714 /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E4A719560F54F85A25F7C6A /* libRNGestureHandler.a */; };
 		C6DFC3A7CF20BDC464DAAE1D /* libPods-PlenRTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9615B52CCD334AF301A8BE4 /* libPods-PlenRTests.a */; };
 		D209782149E94AA6BAD95FD1 /* libRNCalendarEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 518500A3F4E149F4899B5E8F /* libRNCalendarEvents.a */; };
 		DA3FF46C26B9497F8B03FF18 /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19D45E6BA06B4E858B9EAE17 /* libRNGoogleSignin.a */; };
 		E3B050C930074AA3BFD1051A /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C6B45583DBE4AE8A47286DA /* SafariServices.framework */; };
 		EB475991533E4D78B43A2D6D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CC65B04AD5F4F2E9A685A72 /* SystemConfiguration.framework */; };
+		07AA34BD6A99449B839DF812 /* libRNAppAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 867E8A7E4C0F48E3B1BE8838 /* libRNAppAuth.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -322,6 +323,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNFirebase;
 		};
+		9677655C20FB5368005EDE3A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0B183FFAC4C44A158660F682 /* RNGestureHandler.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNGestureHandler;
+		};
 		9677675220E6085600984AF1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CB71A3578D294C639709861B /* RNGoogleSignin.xcodeproj */;
@@ -382,6 +390,7 @@
 		00E356EE1AD99517003FC87E /* PlenRTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlenRTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* PlenRTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlenRTests.m; sourceTree = "<group>"; };
+		0B183FFAC4C44A158660F682 /* RNGestureHandler.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler.xcodeproj; path = "../node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj"; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* PlenR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlenR.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -399,6 +408,7 @@
 		24A17C21A3AE4C31B5DB32CE /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		2C6B45583DBE4AE8A47286DA /* SafariServices.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E4A719560F54F85A25F7C6A /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
 		518500A3F4E149F4899B5E8F /* libRNCalendarEvents.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNCalendarEvents.a; sourceTree = "<group>"; };
 		51A83FDCC6144FF3BF6ECC13 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		5E6B34594B374E42B7595361 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
@@ -445,6 +455,8 @@
 		E87F22407E3C4F67A449C26C /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		F136ED01681843B7A309087F /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		FA201EB9CB484276A057FF27 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		F1F85AF5B667466CB5830634 /* RNAppAuth.xcodeproj */ = {isa = PBXFileReference; name = "RNAppAuth.xcodeproj"; path = "../node_modules/react-native-app-auth/ios/RNAppAuth.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		867E8A7E4C0F48E3B1BE8838 /* libRNAppAuth.a */ = {isa = PBXFileReference; name = "libRNAppAuth.a"; path = "libRNAppAuth.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -488,6 +500,8 @@
 				EB475991533E4D78B43A2D6D /* SystemConfiguration.framework in Frameworks */,
 				6ADA2FA5AFAA452B93FEE6C4 /* AddressBook.framework in Frameworks */,
 				A3BC5306D638B58078DEA943 /* libPods-PlenR.a in Frameworks */,
+				B8D3DBBF779548DB9B657714 /* libRNGestureHandler.a in Frameworks */,
+				07AA34BD6A99449B839DF812 /* libRNAppAuth.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,6 +694,8 @@
 				63F9F35AFFFE42BAB48F0B57 /* RNCalendarEvents.xcodeproj */,
 				63FA821F386C46B09EE4A95A /* RNFirebase.xcodeproj */,
 				CB71A3578D294C639709861B /* RNGoogleSignin.xcodeproj */,
+				0B183FFAC4C44A158660F682 /* RNGestureHandler.xcodeproj */,
+				F1F85AF5B667466CB5830634 /* RNAppAuth.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -746,6 +762,14 @@
 			path = "../node_modules/react-native-vector-icons/Fonts";
 			sourceTree = "<group>";
 		};
+		9677655920FB5368005EDE3A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9677655D20FB5368005EDE3A /* libRNGestureHandler.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9677674F20E6085600984AF1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -770,6 +794,7 @@
 				518500A3F4E149F4899B5E8F /* libRNCalendarEvents.a */,
 				6624484A4CF744CBBC5508CD /* libRNFirebase.a */,
 				19D45E6BA06B4E858B9EAE17 /* libRNGoogleSignin.a */,
+				4E4A719560F54F85A25F7C6A /* libRNGestureHandler.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -961,6 +986,10 @@
 				{
 					ProductGroup = 9682CD6C20F100C700BFC7AB /* Products */;
 					ProjectRef = 9682CD6B20F100C700BFC7AB /* RNFS.xcodeproj */;
+				},
+				{
+					ProductGroup = 9677655920FB5368005EDE3A /* Products */;
+					ProjectRef = 0B183FFAC4C44A158660F682 /* RNGestureHandler.xcodeproj */;
 				},
 				{
 					ProductGroup = 9677674F20E6085600984AF1 /* Products */;
@@ -1239,6 +1268,13 @@
 			remoteRef = 960AEA2420E0DB3A00FCB7F2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9677655D20FB5368005EDE3A /* libRNGestureHandler.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNGestureHandler.a;
+			remoteRef = 9677655C20FB5368005EDE3A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		9677675320E6085600984AF1 /* libRNGoogleSignin.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1451,12 +1487,16 @@
 					"$(SRCROOT)/../node_modules/react-native-calendar-events",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
+					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-app-auth/ios",
 				);
 				INFOPLIST_FILE = PlenRTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1486,12 +1526,16 @@
 					"$(SRCROOT)/../node_modules/react-native-calendar-events",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
+					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-app-auth/ios",
 				);
 				INFOPLIST_FILE = PlenRTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1528,6 +1572,8 @@
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native/React",
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
+					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-app-auth/ios",
 				);
 				INFOPLIST_FILE = PlenR/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
@@ -1571,6 +1617,8 @@
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native/React",
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
+					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-app-auth/ios",
 				);
 				INFOPLIST_FILE = PlenR/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;

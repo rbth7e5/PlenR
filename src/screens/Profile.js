@@ -42,6 +42,17 @@ export default class Profile extends Component<Props> {
               animated: true,
             })}
           />
+          <Button
+            title='My PlenR'
+            onPress={() => this.props.navigator.push({
+              screen: 'PlenR.PlenRLogin',
+              title: 'Calendars',
+              passProps: {
+                onRetrieveEvents: this.handleEvents,
+              },
+              animated: true,
+            })}
+          />
         </View>
       </ScrollView>
     );

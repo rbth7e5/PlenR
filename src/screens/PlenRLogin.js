@@ -2,56 +2,108 @@ import React, { Component } from 'react';
 
 import { GoogleSignin } from 'react-native-google-signin';
 import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
+import { authorize, refresh, revoke } from 'react-native-app-auth';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
 import CalendarBox from '../components/CalendarBox';
 
-import TokenClient from '@okta/okta-react-native';
-
-const tokenClient = new TokenClient({
+const config = {
   issuer: 'https://dev-481057.oktapreview.com/oauth2/default',
-  client_id: '0oafpo5p7i18BmlkU0h7',
-  scope: 'openid profile',
-  redirect_uri: __DEV__ ?
-    'exp://localhost:19000/+expo-auth-session' :
-    'com.oktapreview.dev-481057:/+expo-auth-session'
-})
+  clientId: '0oafpo5p7i18BmlkU0h7',
+  redirectUrl: 'com.oktapreview.dev-481057:/callback',
+  additionalParameters: {},
+  scopes: ['openid', 'profile', 'email', 'offline_access']
+};
 
 export default class PlenRLogin extends Component<Props> {
   constructor(props) {
     super(props);
     this.state = {
-
+      authenticated: false,
+      accessToken: '',
+      accessTokenExpirationDate: '',
+      refreshToken: ''
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
+  authorize = async () => {
+    try {
+      const authState = await authorize(config);
+      this.setState({
+        authenticated: true,
+        accessToken: authState.accessToken,
+        accessTokenExpirationDate: authState.accessTokenExpirationDate,
+        refreshToken: authState.refreshToken
+      })
+    } catch (error) {
+      alert('Failed to log in', error.message);
+    }
+  };
+
+  refresh = async () => {
+    try {
+      const authState = await refresh(config, {
+        refreshToken: this.state.refreshToken
+      });
+      this.setState({
+        authenticated: true,
+        accessToken: authState.accessToken || this.state.accessToken,
+        accessTokenExpirationDate: authState.accessTokenExpirationDate || this.state.accessTokenExpirationDate,
+        refreshToken: authState.refreshToken || this.state.refreshToken
+      })
+    } catch (error) {
+      alert('Faield to refresh token', error.message);
+    }
+  };
+
+  revoke = async () => {
+    try {
+      await revoke(config, {
+        tokenToRevoke: this.state.accessToken,
+        sendClientId: true
+      });
+      this.setState({
+        authenticated: false,
+        accessToken: '',
+        accessTokenExpirationDate: '',
+        refreshToken: ''
+      });
+    } catch (error) {
+      alert('Failed to revoke token', error.message);
+    }
+  };
+
   onNavigatorEvent(event) {
     if (event.type == 'NavBarButtonPress') {
       if (event.id == 'sign in') {
-        this.signIn();
+        this.authorize();
       }
       if (event.id == 'sign out') {
-        this.signOut();
+        this.revoke();
       }
     }
   }
 
   render() {
+    this.state.authenticated ?
+      this.props.navigator.setButtons({
+        rightButtons: [{
+          id: 'sign out',
+          title: 'Sign Out',
+        }],
+      }) :
+      this.props.navigator.setButtons({
+        rightButtons: [{
+          id: 'sign in',
+          title: 'Sign In',
+        }],
+      });
+
     return (
       <ScrollView>
       <View style={styles.container}>
-      {this.state.calendarListArray.map((calendar) => {
-        return (
-          <CalendarBox
-            key={calendar.id}
-            calendar={calendar}
-            user={this.state.user}
-            onRetrieveEvents={this.props.onRetrieveEvents}
-            navigator={this.props.navigator}
-          />
-        );
-      })}
+        <Text>{this.state.accessTokenExpirationDate}</Text>
       </View>
       </ScrollView>
     );

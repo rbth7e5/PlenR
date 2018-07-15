@@ -14,6 +14,7 @@
 #import "RCCManager.h"
 
 #import <React/RCTRootView.h>
+#import "AppAuth.h"
 
 @implementation AppDelegate
 
@@ -31,6 +32,16 @@
   self.window.backgroundColor = [UIColor whiteColor];
   [[RCCManager sharedInstance] initBridgeWithBundleURL:jsCodeLocation launchOptions:launchOptions];
   return YES;
+}
+
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<NSString *, id> *)options {
+  if ([_currentAuthorizationFlow resumeAuthorizationFlowWithURL:url]) {
+    _currentAuthorizationFlow = nil;
+    return YES;
+  }
+  return NO;
 }
 
 @end

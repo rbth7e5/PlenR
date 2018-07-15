@@ -4,6 +4,12 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactnativenavigation.NavigationReactPackage;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
+import com.calendarevents.CalendarEventsPackage;
+import com.reactlibrary.RNAppAuthPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.calendarevents.CalendarEventsPackage;
 import com.reactnativenavigation.bridge.NavigationReactPackage;
@@ -31,6 +37,12 @@ public class MainApplication extends NavigationApplication {
          return Arrays.<ReactPackage>asList(
              // eg. new VectorIconsPackage()
             new MainReactPackage(),
+            new VectorIconsPackage(),
+            new NavigationReactPackage(),
+            new RNGoogleSigninPackage(),
+            new CalendarEventsPackage(),
+            new RNAppAuthPackage(),
+            new RNGestureHandlerPackage(),
                  new VectorIconsPackage(),
             new NavigationReactPackage(),
             new RNGoogleSigninPackage(),

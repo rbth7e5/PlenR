@@ -42,6 +42,14 @@
 				<string>org.reactjs.native.example.PlenR</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.oktapreview.dev-481057</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -61,7 +69,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>This app requires access to the calendar</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>FontAwesome.ttf</string>

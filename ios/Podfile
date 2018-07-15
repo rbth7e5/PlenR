@@ -9,6 +9,7 @@ target 'PlenR' do
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'GoogleSignIn'
+  pod 'AppAuth', '>= 0.91'
 
   target 'PlenRTests' do
     inherit! :search_paths
