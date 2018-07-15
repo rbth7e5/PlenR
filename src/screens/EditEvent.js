@@ -14,6 +14,8 @@ import {
   LayoutAnimation,
 } from 'react-native';
 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import Event from '../util/Event';
 
 export default class EditEvent extends Component<Props> {
@@ -153,7 +155,7 @@ export default class EditEvent extends Component<Props> {
     };
     return (
       <View style={styles.container}>
-        <ScrollView>
+        <KeyboardAwareScrollView style={styles.container}>
           <View style={styles.gaps_between}></View>
           <View style={styles.title}>
             <TextInput
@@ -225,7 +227,7 @@ export default class EditEvent extends Component<Props> {
               style={styles.notes_text}
             />
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
         <View style={styles.delete_button}>
           <Button onPress={() => Alert.alert(
                 'Confirm Event Deletion',

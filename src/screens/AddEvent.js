@@ -11,7 +11,10 @@ import {
   TextInput,
   DatePickerIOS,
   LayoutAnimation,
+  KeyboardAvoidingView,
 } from 'react-native';
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Event from '../util/Event';
 
@@ -141,6 +144,7 @@ export default class AddEvent extends PureComponent<Props> {
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
   }
+
   render(){
     let pickerAnimationSetting = {
       duration: 300,
@@ -154,7 +158,7 @@ export default class AddEvent extends PureComponent<Props> {
     };
     return (
       <View style={styles.container}>
-        <ScrollView>
+        <KeyboardAwareScrollView style={styles.container}>
           <View style={styles.gaps_between}></View>
           <View style={styles.title}>
             <TextInput
@@ -236,7 +240,7 @@ export default class AddEvent extends PureComponent<Props> {
               multiline={true}
             />
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     )
   }
@@ -326,5 +330,5 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     paddingRight: 15,
     flex: 1,
-  }
+  },
 })
