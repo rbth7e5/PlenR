@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { GoogleSignin } from 'react-native-google-signin';
-import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
+import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight, AsyncStorage } from 'react-native';
 import { authorize, refresh, revoke } from 'react-native-app-auth';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
@@ -27,6 +27,33 @@ export default class PlenRLogin extends Component<Props> {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
+  componentDidMount() {
+    AsyncStorage.getItem('@token:Key')
+        .then((authState_unparsed) => {
+          let authState = JSON.parse(authState_unparsed);
+          if (authState) {
+            if (this.checkIfTokenExpired(authState)) {
+              this.refresh();
+            } else {
+              this.setState({
+                authenticated: true,
+                accessToken: authState.accessToken,
+                accessTokenExpirationDate: authState.accessTokenExpirationDate,
+                refreshToken: authState.refreshToken
+              })
+            }
+          }
+        })
+        .catch((error) => {
+          console.warn(error);
+        })
+  }
+
+  checkIfTokenExpired(authState) {
+    let expiryDate = moment(authState.accessTokenExpirationDate);
+    return expiryDate.isBefore(new Date());
+  }
+
   authorize = async () => {
     try {
       const authState = await authorize(config);
@@ -36,6 +63,7 @@ export default class PlenRLogin extends Component<Props> {
         accessTokenExpirationDate: authState.accessTokenExpirationDate,
         refreshToken: authState.refreshToken
       })
+      AsyncStorage.setItem('@token:Key', JSON.stringify(authState));
     } catch (error) {
       alert('Failed to log in', error.message);
     }
@@ -52,6 +80,7 @@ export default class PlenRLogin extends Component<Props> {
         accessTokenExpirationDate: authState.accessTokenExpirationDate || this.state.accessTokenExpirationDate,
         refreshToken: authState.refreshToken || this.state.refreshToken
       })
+      AsyncStorage.setItem('@token:Key', JSON.stringify(authState));
     } catch (error) {
       alert('Faield to refresh token', error.message);
     }
