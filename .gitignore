@@ -74,4 +74,4 @@ captures/
 
 # Sensitive information
 credentials.json
-
+GoogleService-Info.plist
