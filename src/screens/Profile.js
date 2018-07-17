@@ -9,6 +9,8 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
+import firebase from 'react-native-firebase';
+
 export default class Profile extends Component<Props> {
   static navigatorStyle = {
     largeTitle: true,
@@ -18,7 +20,14 @@ export default class Profile extends Component<Props> {
     super(props);
     this.state = {
       calendarList: [],
+      currentUser: null,
     }
+  }
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged((user) => {
+      this.setState({currentUser: user});
+    });
   }
 
   handleEvents = (calendarID, events_unparsed) => {
@@ -27,25 +36,22 @@ export default class Profile extends Component<Props> {
     });
   }
 
+  renderButtonTitle() {
+    if (this.state.currentUser) {
+      return this.state.currentUser.displayName || 'why do you not have a ****ing name';
+    } else {
+      return 'Sign in with Google';
+    }
+  }
+
   render() {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.account_container}>
           <Button
-            title='Google'
+            title={this.renderButtonTitle()}
             onPress={() => this.props.navigator.push({
               screen: 'PlenR.GoogleLogin',
-              title: 'Calendars',
-              passProps: {
-                onRetrieveEvents: this.handleEvents,
-              },
-              animated: true,
-            })}
-          />
-          <Button
-            title='My PlenR'
-            onPress={() => this.props.navigator.push({
-              screen: 'PlenR.PlenRLogin',
               title: 'Calendars',
               passProps: {
                 onRetrieveEvents: this.handleEvents,

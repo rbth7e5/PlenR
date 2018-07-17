@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -14,6 +15,7 @@
 		00E356F31AD99517003FC87E /* PlenRTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* PlenRTests.m */; };
 		0219BDCD352A4D4FB93FE6E4 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 809D166E360C441FB4A314FB /* libz.tbd */; };
 		06B93EC5F2014F34A708F8C3 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F136ED01681843B7A309087F /* libRNVectorIcons.a */; };
+		07AA34BD6A99449B839DF812 /* libRNAppAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 867E8A7E4C0F48E3B1BE8838 /* libRNAppAuth.a */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
@@ -53,7 +55,6 @@
 		DA3FF46C26B9497F8B03FF18 /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19D45E6BA06B4E858B9EAE17 /* libRNGoogleSignin.a */; };
 		E3B050C930074AA3BFD1051A /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C6B45583DBE4AE8A47286DA /* SafariServices.framework */; };
 		EB475991533E4D78B43A2D6D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CC65B04AD5F4F2E9A685A72 /* SystemConfiguration.framework */; };
-		07AA34BD6A99449B839DF812 /* libRNAppAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 867E8A7E4C0F48E3B1BE8838 /* libRNAppAuth.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -330,6 +331,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNGestureHandler;
 		};
+		967765C520FDCAB0005EDE3A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F1F85AF5B667466CB5830634 /* RNAppAuth.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNAppAuth;
+		};
 		9677675220E6085600984AF1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CB71A3578D294C639709861B /* RNGoogleSignin.xcodeproj */;
@@ -421,6 +429,7 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		809D166E360C441FB4A314FB /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		867E8A7E4C0F48E3B1BE8838 /* libRNAppAuth.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNAppAuth.a; sourceTree = "<group>"; };
 		91951EDC4FCD43F4BBB0AFF4 /* AddressBook.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		9638DDC320E0DFCB00D5780B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		96543DC120D76F1400D37848 /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Octicons.ttf; sourceTree = "<group>"; };
@@ -454,9 +463,8 @@
 		D333BB9ACC214E23B2638F56 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		E87F22407E3C4F67A449C26C /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		F136ED01681843B7A309087F /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
+		F1F85AF5B667466CB5830634 /* RNAppAuth.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNAppAuth.xcodeproj; path = "../node_modules/react-native-app-auth/ios/RNAppAuth.xcodeproj"; sourceTree = "<group>"; };
 		FA201EB9CB484276A057FF27 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
-		F1F85AF5B667466CB5830634 /* RNAppAuth.xcodeproj */ = {isa = PBXFileReference; name = "RNAppAuth.xcodeproj"; path = "../node_modules/react-native-app-auth/ios/RNAppAuth.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		867E8A7E4C0F48E3B1BE8838 /* libRNAppAuth.a */ = {isa = PBXFileReference; name = "libRNAppAuth.a"; path = "libRNAppAuth.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -770,6 +778,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		967765C220FDCAB0005EDE3A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				967765C620FDCAB0005EDE3A /* libRNAppAuth.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9677674F20E6085600984AF1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -795,6 +811,7 @@
 				6624484A4CF744CBBC5508CD /* libRNFirebase.a */,
 				19D45E6BA06B4E858B9EAE17 /* libRNGoogleSignin.a */,
 				4E4A719560F54F85A25F7C6A /* libRNGestureHandler.a */,
+				867E8A7E4C0F48E3B1BE8838 /* libRNAppAuth.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -974,6 +991,10 @@
 				{
 					ProductGroup = 969A671320DA778B00BBBCBE /* Products */;
 					ProjectRef = 969A671220DA778B00BBBCBE /* ReactNativeNavigation.xcodeproj */;
+				},
+				{
+					ProductGroup = 967765C220FDCAB0005EDE3A /* Products */;
+					ProjectRef = F1F85AF5B667466CB5830634 /* RNAppAuth.xcodeproj */;
 				},
 				{
 					ProductGroup = 969A675C20DC027200BBBCBE /* Products */;
@@ -1275,6 +1296,13 @@
 			remoteRef = 9677655C20FB5368005EDE3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		967765C620FDCAB0005EDE3A /* libRNAppAuth.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNAppAuth.a;
+			remoteRef = 967765C520FDCAB0005EDE3A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		9677675320E6085600984AF1 /* libRNGoogleSignin.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1381,11 +1409,13 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-PlenR/Pods-PlenR-resources.sh",
 				"${PODS_ROOT}/GTMOAuth2/Source/Touch/GTMOAuth2ViewTouch.xib",
 				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/gRPC/gRPCCertificates.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GTMOAuth2ViewTouch.nib",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gRPCCertificates.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

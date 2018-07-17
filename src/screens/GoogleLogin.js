@@ -6,6 +6,8 @@ import SortedList from '../util/SortedList';
 import Event from '../util/Event';
 import CalendarBox from '../components/CalendarBox';
 
+import firebase from 'react-native-firebase';
+
 export default class GoogleLogin extends Component<Props> {
   constructor(props) {
     super(props);
@@ -72,13 +74,18 @@ export default class GoogleLogin extends Component<Props> {
         signingIn: true,
       })
       const data = await GoogleSignin.signIn();
+      const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
+      const currentUser = await firebase.auth().signInAndRetrieveDataWithCredential(credential);
+      firebase.firestore().collection('users').doc(currentUser.user.uid).set({
+        displayName: currentUser.user.displayName,
+        email: currentUser.user.email,
+      });
       this.setState({
         user: data,
         signingIn: false,
       });
       this.getCalendarsFromGoogle();
     } catch (e) {
-      console.warn(e, 'error is here');
       this.setState({
         signingIn: false,
       })
@@ -89,6 +96,7 @@ export default class GoogleLogin extends Component<Props> {
     try {
       await GoogleSignin.revokeAccess();
       await GoogleSignin.signOut();
+      await firebase.auth().signOut();
       this.setState({
         user: null,
         calendarListArray: []

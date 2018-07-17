@@ -3,6 +3,7 @@ package com.plenr;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnativenavigation.NavigationReactPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
@@ -37,6 +38,7 @@ public class MainApplication extends NavigationApplication {
          return Arrays.<ReactPackage>asList(
              // eg. new VectorIconsPackage()
             new MainReactPackage(),
+            new RNFirebasePackage(),
             new VectorIconsPackage(),
             new NavigationReactPackage(),
             new RNGoogleSigninPackage(),

@@ -7,6 +7,8 @@ import SortedList from '../util/SortedList';
 import Event from '../util/Event';
 import CalendarBox from '../components/CalendarBox';
 
+import firebase from 'react-native-firebase';
+
 const config = {
   issuer: 'https://dev-481057.oktapreview.com/oauth2/default',
   clientId: '0oafpo5p7i18BmlkU0h7',
@@ -18,11 +20,13 @@ const config = {
 export default class PlenRLogin extends Component<Props> {
   constructor(props) {
     super(props);
+    this.dataBaseRef = firebase.firestore().collection('users');
     this.state = {
       authenticated: false,
       accessToken: '',
       accessTokenExpirationDate: '',
-      refreshToken: ''
+      refreshToken: '',
+      user: {}
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -64,6 +68,11 @@ export default class PlenRLogin extends Component<Props> {
         refreshToken: authState.refreshToken
       })
       AsyncStorage.setItem('@token:Key', JSON.stringify(authState));
+      this.setState({user: dataBaseRef.doc()});
+      this.state.user.set({
+        accessToken: JSON.stringify(authState.accessToken),
+        idToken: JSON.stringify(authState.idToken)
+      });
     } catch (error) {
       alert('Failed to log in', error.message);
     }

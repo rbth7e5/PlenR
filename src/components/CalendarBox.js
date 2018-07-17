@@ -43,7 +43,7 @@ export default class CalendarBox extends Component<Props> {
       }
     };
     request.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/'+this.props.calendar.id+'/events?access_token='+this.props.user.accessToken
-        + '&timeMin=' + moment().subtract(7, 'days').utc().format().toString());
+        + '&timeMin=' + moment().subtract(14, 'days').utc().format().toString());
     request.send();
   }
 
