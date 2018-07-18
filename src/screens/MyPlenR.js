@@ -22,6 +22,8 @@ import Event from '../util/Event';
 import CalendarMonthView from '../components/CalendarMonthView';
 import Calendar from '../util/Calendar';
 
+import firebase from 'react-native-firebase';
+
 export default class MyPlenR extends Component<Props> {
   static navigatorButtons = {
     rightButtons: [
@@ -64,6 +66,7 @@ export default class MyPlenR extends Component<Props> {
     let data = Calendar.generateYearMonthData(moment({year: 1918, month: 0}), today.clone().add(1, 'months'));
     this.state = {
       currentTime: today,
+      currentUser: null,
       local_events: new SortedList(Event.eventComparator),
       retrievingEvents: true,
       calendarKeys: [],
@@ -81,6 +84,9 @@ export default class MyPlenR extends Component<Props> {
         backgroundBlur: 'light',
         tapBackgroundToDismiss: false,
       }
+    });
+    firebase.auth().onAuthStateChanged((user) => {
+      this.setState({currentUser: user});
     });
     AsyncStorage.getItem('@localCalendar:key')
       .then((string) => {
@@ -121,6 +127,11 @@ export default class MyPlenR extends Component<Props> {
             onAddEvent: (data) => {
               this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
               AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
+              firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                  .doc('PlenR Calendar').set({
+                    id: this.state.local_calendar.id,
+                    events: this.state.local_calendar.eventsList.toArray()
+                  });
             }
           }
         });
@@ -157,6 +168,10 @@ export default class MyPlenR extends Component<Props> {
           this.setState({calendarKeys: this.state.calendarKeys.concat(id)});
         }
         AsyncStorage.setItem('@calendarKeys:key', JSON.stringify(this.state.calendarKeys));
+        firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+            .doc(id).set({
+              events: JSON.parse(string).items
+            });
         const googleEventsArray = JSON.parse(string).items;
         AsyncStorage.setItem(id, string);
         for (let e of googleEventsArray) {
@@ -233,10 +248,20 @@ export default class MyPlenR extends Component<Props> {
                   onDeleteEvent: (event) => {
                     this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
                     AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
+                    firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                        .doc('PlenR Calendar').set({
+                          id: this.state.local_calendar.id,
+                          events: this.state.local_calendar.eventsList.toArray()
+                        });
                   },
                   onAddEvent: (data) => {
                     this.setState({local_calendar: this.state.local_calendar.addEvent(data)})
                     AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
+                    firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                        .doc('PlenR Calendar').set({
+                          id: this.state.local_calendar.id,
+                          events: this.state.local_calendar.eventsList.toArray()
+                        });
                   }
                 },
                 animated: true,
