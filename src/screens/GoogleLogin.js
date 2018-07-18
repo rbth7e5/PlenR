@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { GoogleSignin } from 'react-native-google-signin';
-import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight } from 'react-native';
+import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight, AsyncStorage } from 'react-native';
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
 import CalendarBox from '../components/CalendarBox';
@@ -13,6 +13,7 @@ export default class GoogleLogin extends Component<Props> {
     super(props);
     this.state = {
       user: null,
+      firebaseUser: null,
       calendarListArray: [],
       signingIn: false,
       retrievingCalendars: false,
@@ -37,6 +38,9 @@ export default class GoogleLogin extends Component<Props> {
     if (this.state.user !== null) {
       await this.getCalendarsFromGoogle();
     }
+    await firebase.auth().onAuthStateChanged((user) => {
+      this.setState({firebaseUser: user});
+    });
   }
 
   async configureGoogleSignIn() {
@@ -83,6 +87,7 @@ export default class GoogleLogin extends Component<Props> {
       this.setState({
         user: data,
         signingIn: false,
+        firebaseUser: currentUser.user
       });
       this.getCalendarsFromGoogle();
     } catch (e) {
@@ -101,8 +106,12 @@ export default class GoogleLogin extends Component<Props> {
         user: null,
         calendarListArray: []
       });
+      AsyncStorage.clear()
+        .catch((error) => {
+          alert('error deleting cache');
+        });
     } catch (error) {
-      alert('signing out failed!')
+      alert('signing out failed!');
     }
   }
 
@@ -114,10 +123,9 @@ export default class GoogleLogin extends Component<Props> {
         return;
       }
       if (request.status === 200) {
-        this.setState({events: request.responseText});
-        const calendarList = JSON.parse(request.responseText);
+        const calendarList = JSON.parse(request.responseText).items;
         this.setState({
-          calendarListArray: calendarList.items,
+          calendarListArray: calendarList,
           retrievingCalendars: false,
         });
       } else {

@@ -50,12 +50,6 @@ export default class MyPlenR extends Component<Props> {
         })
       }
     ],
-    leftButtons: [
-      {
-        id: 'delete cache',
-        systemItem: 'trash'
-      },
-    ]
   };
 
   constructor(props) {
@@ -68,38 +62,51 @@ export default class MyPlenR extends Component<Props> {
       currentTime: today,
       currentUser: null,
       local_events: new SortedList(Event.eventComparator),
-      retrievingEvents: true,
       calendarKeys: [],
       scrollOffset: (data.length - 2) * 300,
       yearMonthData: data,
-      local_calendar: new Calendar({title: 'Main Calendar'}),
+      local_calendar: null,
     }
+    this.dataBaseRef = firebase.firestore().collection('users');
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
   componentDidMount() {
-    this.props.navigator.showLightBox({
-      screen: 'PlenR.Loading',
-      style: {
-        backgroundBlur: 'light',
-        tapBackgroundToDismiss: false,
-      }
-    });
     firebase.auth().onAuthStateChanged((user) => {
       this.setState({currentUser: user});
+      if (user) {
+        this.props.navigator.showLightBox({
+          screen: 'PlenR.Loading',
+          style: {
+            backgroundBlur: 'light',
+            tapBackgroundToDismiss: false,
+          }
+        });
+        //get calendars ref from user
+        let calendarRef = this.dataBaseRef.doc(user.uid).collection('calendars')
+        //listen to events on database for each calendar
+        this.dataBaseRef.doc(user.uid).collection('calendars').doc('PlenR Calendar')
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                this.setState({local_calendar: Calendar.parse(doc.data().events)});
+              }
+            })
+            .catch((error) => {
+              alert('error retrieving local events!');
+              this.props.navigator.dismissLightBox();
+            })
+            .finally(() => {
+              this.props.navigator.dismissLightBox();
+            })
+      } else {
+        this.setState({
+          local_calendar: null
+        })
+      }
     });
-    AsyncStorage.getItem('@localCalendar:key')
-      .then((string) => {
-        if (string !== null) {
-          this.setState({local_calendar: Calendar.parse(string)});
-        } else {
-          this.props.navigator.dismissLightBox();
-        }
-      }).catch((error) => {
-        alert('error retrieving local events!');
-        this.props.navigator.dismissLightBox();
-      });
-    AsyncStorage.getItem('@calendarKeys:key')
+
+    /*AsyncStorage.getItem('@calendarKeys:key')
       .then((string) => {
         let calendarKeys = JSON.parse(string);
         if (calendarKeys !== null) {
@@ -110,7 +117,7 @@ export default class MyPlenR extends Component<Props> {
         }
       }).catch((error) => {
         this.props.navigator.dismissLightBox();
-      });
+      });*/
   }
 
   onNavigatorEvent(event) {
@@ -126,7 +133,6 @@ export default class MyPlenR extends Component<Props> {
             day_selected: this.state.currentTime.date(),
             onAddEvent: (data) => {
               this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
-              AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
               firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                   .doc('PlenR Calendar').set({
                     id: this.state.local_calendar.id,
@@ -137,26 +143,15 @@ export default class MyPlenR extends Component<Props> {
         });
       }
       if (event.id == 'organise') {
-        this.props.navigator.showModal({
-          screen: 'PlenR.OrganiseEvent',
-          title: 'Organise Event',
-          animationType: 'slide-up',
-        })
-      }
-      if (event.id == 'delete cache') {
-        Alert.alert(
-          'Confirm Cache Deletion',
-          '',
-          [
-            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-            {text: 'Confirm', onPress: () => {
-              AsyncStorage.clear()
-                .catch((error) => {
-                  alert('error deleting cache');
-                });
-            }},
-          ]
-        )
+        if (this.state.currentUser) {
+          this.props.navigator.showModal({
+            screen: 'PlenR.OrganiseEvent',
+            title: 'Organise Event',
+            animationType: 'slide-up',
+          })
+        } else {
+          alert('You must be signed in to organise events!')
+        }
       }
     }
     if (event.type == 'DeepLink') {
@@ -186,6 +181,13 @@ export default class MyPlenR extends Component<Props> {
         }
       }
     }
+  }
+
+  onSignOut() {
+    this.setState({
+      local_events: new SortedList(Event.eventComparator),
+      local_calendar: new Calendar({title: 'Main Calendar'})
+    })
   }
 
   retrieveGoogleEventsFromCache(calendarKeys) {
@@ -247,7 +249,6 @@ export default class MyPlenR extends Component<Props> {
                   event: e,
                   onDeleteEvent: (event) => {
                     this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
-                    AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                         .doc('PlenR Calendar').set({
                           id: this.state.local_calendar.id,
@@ -256,7 +257,6 @@ export default class MyPlenR extends Component<Props> {
                   },
                   onAddEvent: (data) => {
                     this.setState({local_calendar: this.state.local_calendar.addEvent(data)})
-                    AsyncStorage.setItem('@localCalendar:key', this.state.local_calendar.toJSON());
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                         .doc('PlenR Calendar').set({
                           id: this.state.local_calendar.id,

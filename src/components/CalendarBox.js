@@ -8,7 +8,6 @@ import {
   Button,
   TouchableHighlight,
   ActivityIndicator,
-  AsyncStorage,
 } from 'react-native';
 
 export default class CalendarBox extends Component<Props> {
