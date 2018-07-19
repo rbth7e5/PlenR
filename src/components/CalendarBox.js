@@ -88,12 +88,13 @@ var moment = require('moment');
 
 const styles = StyleSheet.create({
   calendar_container: {
-    height: 50,
+    height: 70,
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#fff',
+    borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderBottomColor: '#f5f5f5',
+    borderColor: '#dddddd',
   },
   activity: {
     width: 85,

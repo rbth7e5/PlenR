@@ -184,8 +184,11 @@ export default class MyPlenR extends Component<Props> {
     }
     return retrievedEvents.map((e) => {
       return (
-        <TouchableHighlight
+        <EventBox
           key={e.id}
+          ref={(ref) => (this.viewRef = ref)}
+          event={e}
+          day_selected={this.state.currentTime.toDate()}
           onPress={() => {
             window.requestAnimationFrame(() => {
               this.props.navigator.push({
@@ -210,14 +213,36 @@ export default class MyPlenR extends Component<Props> {
                         });
                   }
                 },
-                animated: true,
               });
             });
           }}
-          underlayColor='#f5f5f5'
-        >
-          <EventBox event={e} day_selected={this.state.currentTime.toDate()}/>
-        </TouchableHighlight>
+          onLongPress={() => {
+            this.props.navigator.push({
+              screen: 'PlenR.EventDetails',
+              title: 'Event Details',
+              passProps: {
+                event: e,
+                onDeleteEvent: (event) => {
+                  this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
+                  firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                      .doc('PlenR Calendar').set({
+                        id: this.state.local_calendar.id,
+                        events: this.state.local_calendar.eventsList.toArray()
+                      });
+                },
+                onAddEvent: (data) => {
+                  this.setState({local_calendar: this.state.local_calendar.addEvent(data)})
+                  firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                      .doc('PlenR Calendar').set({
+                        id: this.state.local_calendar.id,
+                        events: this.state.local_calendar.eventsList.toArray()
+                      });
+                }
+              },
+              previewView: this.viewRef,
+            });
+          }}
+        />
       )})
         .toArray();
   }

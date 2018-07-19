@@ -182,20 +182,21 @@ export default class GoogleLogin extends Component<Props> {
         );
       }
       return (
-        <ScrollView>
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
+        <View style={styles.gap}></View>
+        <View style={styles.gap}></View>
         {this.state.calendarListArray.map((calendar) => {
           return (
-            <CalendarBox
-              key={calendar.id}
-              calendar={calendar}
-              user={this.state.user}
-              //onRetrieveEvents={this.props.onRetrieveEvents}
-              navigator={this.props.navigator}
-            />
+            <View key={calendar.id} style={styles.container}>
+              <CalendarBox
+                calendar={calendar}
+                user={this.state.user}
+                navigator={this.props.navigator}
+              />
+              <View style={styles.gap}></View>
+            </View>
           );
         })}
-        </View>
         </ScrollView>
       );
     }
@@ -207,10 +208,8 @@ var moment = require('moment');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
     backgroundColor: '#f5f5f5'
   },
-
   signin: {
     flex: 1,
     alignItems: 'center',
@@ -221,5 +220,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#aaaaaa'
   },
-
+  gap: {
+    padding: 10
+  }
 })

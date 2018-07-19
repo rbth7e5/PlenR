@@ -18,13 +18,19 @@ export default class EventBox extends PureComponent<Props> {
 
   render() {
     return (
-      <View style={styles.event}>
-        <TimeInfo event={this.props.event} day_selected={this.props.day_selected} />
-        <View style={styles.event_details}>
-          <Text style={styles.event_text}>{this.props.event.title}</Text>
-          <Text style={styles.location_text}>{this.props.event.location}</Text>
+      <TouchableHighlight
+        onPress={this.props.onPress}
+        onLongPress={this.props.onLongPress}
+        underlayColor='#f5f5f5'
+      >
+        <View style={styles.event}>
+          <TimeInfo event={this.props.event} day_selected={this.props.day_selected} />
+          <View style={styles.event_details}>
+            <Text style={styles.event_text}>{this.props.event.title}</Text>
+            <Text style={styles.location_text}>{this.props.event.location}</Text>
+          </View>
         </View>
-      </View>
+      </TouchableHighlight>
     );
   }
 }

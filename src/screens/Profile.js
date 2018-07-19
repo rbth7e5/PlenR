@@ -46,6 +46,8 @@ export default class Profile extends Component<Props> {
   render() {
     return (
       <ScrollView style={styles.container}>
+        <View style={styles.gap}></View>
+        <View style={styles.gap}></View>
         <View style={styles.account_container}>
           <Button
             title={this.renderButtonTitle()}
@@ -64,11 +66,17 @@ export default class Profile extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f5f5f5'
   },
   account_container: {
     padding: 15,
     flex: 1,
+    borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#dddddd'
+    borderColor: '#dddddd',
+    backgroundColor: '#fff'
+  },
+  gap: {
+    padding: 10,
   }
 })
