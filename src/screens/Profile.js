@@ -22,18 +22,17 @@ export default class Profile extends Component<Props> {
       calendarList: [],
       currentUser: null,
     }
+    this.unsubscribe = null;
   }
 
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
+    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       this.setState({currentUser: user});
     });
   }
 
-  handleEvents = (calendarID, events_unparsed) => {
-    this.props.navigator.handleDeepLink({
-      link: 'googleEvents`' + calendarID + '`' + events_unparsed,
-    });
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   renderButtonTitle() {
@@ -53,9 +52,6 @@ export default class Profile extends Component<Props> {
             onPress={() => this.props.navigator.push({
               screen: 'PlenR.GoogleLogin',
               title: 'Calendars',
-              passProps: {
-                onRetrieveEvents: this.handleEvents,
-              },
               animated: true,
             })}
           />

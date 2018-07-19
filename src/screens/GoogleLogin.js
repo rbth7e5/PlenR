@@ -18,6 +18,7 @@ export default class GoogleLogin extends Component<Props> {
       signingIn: false,
       retrievingCalendars: false,
     };
+    this.unsubscribe = null;
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
@@ -38,9 +39,13 @@ export default class GoogleLogin extends Component<Props> {
     if (this.state.user !== null) {
       await this.getCalendarsFromGoogle();
     }
-    await firebase.auth().onAuthStateChanged((user) => {
+    this.unsubscribe = await firebase.auth().onAuthStateChanged((user) => {
       this.setState({firebaseUser: user});
     });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   async configureGoogleSignIn() {
@@ -106,10 +111,6 @@ export default class GoogleLogin extends Component<Props> {
         user: null,
         calendarListArray: []
       });
-      AsyncStorage.clear()
-        .catch((error) => {
-          alert('error deleting cache');
-        });
     } catch (error) {
       alert('signing out failed!');
     }
@@ -189,7 +190,7 @@ export default class GoogleLogin extends Component<Props> {
               key={calendar.id}
               calendar={calendar}
               user={this.state.user}
-              onRetrieveEvents={this.props.onRetrieveEvents}
+              //onRetrieveEvents={this.props.onRetrieveEvents}
               navigator={this.props.navigator}
             />
           );

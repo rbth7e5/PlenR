@@ -8,7 +8,6 @@ import {
   ScrollView,
   Button,
   TouchableHighlight,
-  AsyncStorage,
   ActivityIndicator,
   VirtualizedList,
   Alert,
@@ -65,14 +64,16 @@ export default class MyPlenR extends Component<Props> {
       calendarKeys: [],
       scrollOffset: (data.length - 2) * 300,
       yearMonthData: data,
-      local_calendar: null,
+      local_calendar: new Calendar({title: 'Main Calendar'}),
+      google_calendars: null,
     }
+    this.unsubscribe = null;
     this.dataBaseRef = firebase.firestore().collection('users');
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
+    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       this.setState({currentUser: user});
       if (user) {
         this.props.navigator.showLightBox({
@@ -84,63 +85,60 @@ export default class MyPlenR extends Component<Props> {
         });
         //get calendars ref from user
         let calendarRef = this.dataBaseRef.doc(user.uid).collection('calendars')
-        //listen to events on database for each calendar
-        this.dataBaseRef.doc(user.uid).collection('calendars').doc('PlenR Calendar')
-            .get()
-            .then((doc) => {
-              if (doc.exists) {
-                this.setState({local_calendar: Calendar.parse(doc.data().events)});
-              }
-            })
-            .catch((error) => {
-              alert('error retrieving local events!');
+        //get events from calendars
+        calendarRef.get()
+            .then((querySnapshot) => {
+              let combined_google = [];
+              querySnapshot.forEach((doc) => {
+                if (doc.id == 'PlenR Calendar') {
+                  this.setState({local_calendar: Calendar.parse(doc.data().events)});
+                } else {
+                  combined_google = combined_google.concat(doc.data().items);
+                }
+              })
+              this.setState({google_calendars: Calendar.parseGoogle(combined_google)});
+            }).catch((error) => {
+              alert('error retrieving events from database!');
               this.props.navigator.dismissLightBox();
             })
             .finally(() => {
               this.props.navigator.dismissLightBox();
             })
       } else {
-        this.setState({
-          local_calendar: null
-        })
+        this.setState({google_calendars: null, local_calendar: new Calendar({title: 'Main Calendar'}),})
       }
     });
+  }
 
-    /*AsyncStorage.getItem('@calendarKeys:key')
-      .then((string) => {
-        let calendarKeys = JSON.parse(string);
-        if (calendarKeys !== null) {
-          this.setState({calendarKeys: calendarKeys});
-          this.retrieveGoogleEventsFromCache(calendarKeys);
-        } else {
-          this.props.navigator.dismissLightBox();
-        }
-      }).catch((error) => {
-        this.props.navigator.dismissLightBox();
-      });*/
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   onNavigatorEvent(event) {
     if (event.type == 'NavBarButtonPress') {
       if (event.id == 'add') {
-        this.props.navigator.showModal({
-          screen: 'PlenR.AddEvent',
-          title: 'Add Event',
-          animationType: 'slide-up',
-          passProps: {
-            year_selected: this.state.currentTime.year(),
-            month_selected: this.state.currentTime.month(),
-            day_selected: this.state.currentTime.date(),
-            onAddEvent: (data) => {
-              this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
-              firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                  .doc('PlenR Calendar').set({
-                    id: this.state.local_calendar.id,
-                    events: this.state.local_calendar.eventsList.toArray()
-                  });
+        if (this.state.currentUser) {
+          this.props.navigator.showModal({
+            screen: 'PlenR.AddEvent',
+            title: 'Add Event',
+            animationType: 'slide-up',
+            passProps: {
+              year_selected: this.state.currentTime.year(),
+              month_selected: this.state.currentTime.month(),
+              day_selected: this.state.currentTime.date(),
+              onAddEvent: (data) => {
+                this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
+                firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                    .doc('PlenR Calendar').set({
+                      id: this.state.local_calendar.id,
+                      events: this.state.local_calendar.eventsList.toArray()
+                    });
+              }
             }
-          }
-        });
+          });
+        } else {
+          alert('You must be signed in to add events!');
+        }
       }
       if (event.id == 'organise') {
         if (this.state.currentUser) {
@@ -154,33 +152,6 @@ export default class MyPlenR extends Component<Props> {
         }
       }
     }
-    if (event.type == 'DeepLink') {
-      const parts = event.link.split('`');
-      if (parts[0] == 'googleEvents') {
-        let id = parts[1];
-        let string = parts[2];
-        if (!this.state.calendarKeys.includes(id)) {
-          this.setState({calendarKeys: this.state.calendarKeys.concat(id)});
-        }
-        AsyncStorage.setItem('@calendarKeys:key', JSON.stringify(this.state.calendarKeys));
-        firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-            .doc(id).set({
-              events: JSON.parse(string).items
-            });
-        const googleEventsArray = JSON.parse(string).items;
-        AsyncStorage.setItem(id, string);
-        for (let e of googleEventsArray) {
-          try {
-            let event = Event.formatGoogle(e);
-            this.setState({
-              local_events: this.state.local_events.add(event)
-            });
-          } catch (error) {
-            continue;
-          }
-        }
-      }
-    }
   }
 
   onSignOut() {
@@ -190,46 +161,21 @@ export default class MyPlenR extends Component<Props> {
     })
   }
 
-  retrieveGoogleEventsFromCache(calendarKeys) {
-    let calendarPromises = calendarKeys.map((key) => {
-      return AsyncStorage.getItem(key);
-    })
-    let reducer = (accum, currVal) => accum.concat(currVal);
-    Promise.all(calendarPromises)
-      .then((strings) => {
-        strings.map((string) => {
-          return JSON.parse(string).items;
-        })
-        .reduce(reducer, [])
-        .forEach((event) => {
-          let formattedEvent = Event.formatGoogle(event);
-          this.setState({local_events: this.state.local_events.add(formattedEvent)});
-        })
-      }).catch((error) => {
-        alert('event unsupported');
-      }).finally(() => {
-        this.props.navigator.dismissLightBox();
-      })
-  }
-
-  retrieveEvents(day) {
-      let currentDay = day;
-      let retrievedEvents =  this.state.local_events.filter((event) => {
-        return moment(event.start).isSame(currentDay, 'day') ||
-            currentDay.isBetween(event.start, event.end, 'minute', '[)') ||
-            moment(event.end).isSame(currentDay, 'day');
-      })
+  retrieveEvents(currentDay) {
+      let retrievedEvents;
       try {
-        let localretrievedEvents = this.state.local_calendar.getEvents(currentDay);
-        retrievedEvents = SortedList.merge(localretrievedEvents, retrievedEvents)
+        let localRetrievedEvents = this.state.local_calendar.getEvents(currentDay);
+        let googleRetrievedEvents = this.state.google_calendars.getEvents(currentDay);
+        retrievedEvents = SortedList.merge(localRetrievedEvents, googleRetrievedEvents);
       } catch (error) {
         console.log('local calendar has no events inside for that day');
+        retrievedEvents = null;
       }
       return retrievedEvents;
   }
 
   renderRetrievedEvents(retrievedEvents) {
-    if (retrievedEvents.isEmpty()) {
+    if (retrievedEvents == null || retrievedEvents.isEmpty()) {
       return (
         [<View key={-1} style={styles.empty_view}>
           <Text style={styles.empty_view_text}>No Events</Text>

@@ -10,12 +10,27 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import firebase from 'react-native-firebase';
+
 export default class CalendarBox extends Component<Props> {
   constructor(props) {
     super(props);
+    this.dataBaseRef = firebase.firestore().collection('users');
     this.state = {
       retrievingEvents: false,
-    }
+      currentUser: null,
+    };
+    this.unsubscribe = null;
+  }
+
+  componentDidMount() {
+    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      this.setState({currentUser: user});
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   getEventsFromCalendar = async () => {
@@ -33,7 +48,8 @@ export default class CalendarBox extends Component<Props> {
         this.setState({
           retrievingEvents: false,
         })
-        this.props.onRetrieveEvents(this.props.calendar.summary, request.responseText);
+        this.dataBaseRef.doc(this.state.currentUser.uid).collection('calendars').doc(this.props.calendar.id)
+            .set(eventsList);
       } else {
         alert('Sync Failed');
         this.setState({

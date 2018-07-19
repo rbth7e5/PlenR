@@ -39,6 +39,15 @@ export default class Calendar {
     return newCalendar;
   }
 
+  static parseGoogle(events) {
+    let newCalendar = new Calendar({title: 'Google Calendar'});
+    for (let event of events) {
+      let newEvent = Event.formatGoogle(event);
+      newCalendar = newCalendar.addEvent(newEvent);
+    }
+    return newCalendar;
+  }
+
   toJSON() {
     return JSON.stringify(this.eventsList.toArray());
   }
