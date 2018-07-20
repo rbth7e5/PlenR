@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
 
 import { GoogleSignin } from 'react-native-google-signin';
-import { ScrollView, Text, View, Button, Platform, StyleSheet, ActivityIndicator, TouchableHighlight, AsyncStorage } from 'react-native';
+import {
+  ScrollView,
+  Text,
+  View,
+  Button,
+  Platform,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableHighlight
+} from 'react-native';
+
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
 import CalendarBox from '../components/CalendarBox';

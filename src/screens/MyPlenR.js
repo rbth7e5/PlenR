@@ -146,6 +146,11 @@ export default class MyPlenR extends Component<Props> {
             screen: 'PlenR.OrganiseEvent',
             title: 'Organise Event',
             animationType: 'slide-up',
+            passProps: {
+              year_selected: this.state.currentTime.year(),
+              month_selected: this.state.currentTime.month(),
+              day_selected: this.state.currentTime.date()
+            }
           })
         } else {
           alert('You must be signed in to organise events!')
@@ -217,30 +222,32 @@ export default class MyPlenR extends Component<Props> {
             });
           }}
           onLongPress={() => {
-            this.props.navigator.push({
-              screen: 'PlenR.EventDetails',
-              title: 'Event Details',
-              passProps: {
-                event: e,
-                onDeleteEvent: (event) => {
-                  this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
-                  firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                      .doc('PlenR Calendar').set({
-                        id: this.state.local_calendar.id,
-                        events: this.state.local_calendar.eventsList.toArray()
-                      });
+            window.requestAnimationFrame(() => {
+              this.props.navigator.push({
+                screen: 'PlenR.EventDetails',
+                title: 'Event Details',
+                passProps: {
+                  event: e,
+                  onDeleteEvent: (event) => {
+                    this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
+                    firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                        .doc('PlenR Calendar').set({
+                          id: this.state.local_calendar.id,
+                          events: this.state.local_calendar.eventsList.toArray()
+                        });
+                  },
+                  onAddEvent: (data) => {
+                    this.setState({local_calendar: this.state.local_calendar.addEvent(data)})
+                    firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                        .doc('PlenR Calendar').set({
+                          id: this.state.local_calendar.id,
+                          events: this.state.local_calendar.eventsList.toArray()
+                        });
+                  }
                 },
-                onAddEvent: (data) => {
-                  this.setState({local_calendar: this.state.local_calendar.addEvent(data)})
-                  firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                      .doc('PlenR Calendar').set({
-                        id: this.state.local_calendar.id,
-                        events: this.state.local_calendar.eventsList.toArray()
-                      });
-                }
-              },
-              previewView: this.viewRef,
-            });
+                previewView: this.viewRef,
+              });
+            })
           }}
         />
       )})
