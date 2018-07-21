@@ -17,6 +17,7 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Event from '../util/Event';
+import InviteeBox from '../components/InviteeBox';
 
 export default class OrganiseEvent extends PureComponent<Props> {
   static navigatorStyle = {
@@ -64,6 +65,7 @@ export default class OrganiseEvent extends PureComponent<Props> {
       dateStartPickerVisible: false,
       dateEndPickerVisible: false,
       numOfInvitees: 0,
+      inviteesAdded: []
     }
   }
 
@@ -153,7 +155,7 @@ export default class OrganiseEvent extends PureComponent<Props> {
             <TextInput
               placeholder = {'Title'}
               placeholderTextColor = '#aaaaaa'
-              onChangeText = {(text) => this.state.title = text}
+              onChangeText = {(text) => this.setState({title: text})}
               style={styles.title_text}
               returnKeyType='next'
               ref={ref => {this._titleInput = ref}}
@@ -162,7 +164,7 @@ export default class OrganiseEvent extends PureComponent<Props> {
             <TextInput
               placeholder = {'Location'}
               placeholderTextColor = '#aaaaaa'
-              onChangeText = {(text) => this.state.location = text}
+              onChangeText = {(text) => this.setState({location: text})}
               style={styles.location_text}
               returnKeyType='next'
               ref={ref => {this._locationInput = ref}}
@@ -187,6 +189,15 @@ export default class OrganiseEvent extends PureComponent<Props> {
                     screen: 'PlenR.AddInvitees',
                     title: 'Add Invitees',
                     animationType: 'slide-up',
+                    passProps: {
+                      onAddInvitee: (invitee) => {
+                        this.setState({
+                          inviteesAdded: this.state.inviteesAdded.concat(invitee),
+                          numOfInvitees: this.state.numOfInvitees + 1
+                        });
+                        this.props.navigator.dismissModal();
+                      }
+                    }
                   })
                 });
               }}
@@ -198,6 +209,9 @@ export default class OrganiseEvent extends PureComponent<Props> {
                 </View>
               </View>
             </TouchableHighlight>
+            {this.state.inviteesAdded.map((invitee) => {
+              return <InviteeBox key={invitee.email} info={invitee}/>
+            })}
             <TouchableHighlight
               onPress={() => {
                 window.requestAnimationFrame(() => {

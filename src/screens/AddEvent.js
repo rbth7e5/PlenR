@@ -164,7 +164,7 @@ export default class AddEvent extends PureComponent<Props> {
             <TextInput
               placeholder = {'Title'}
               placeholderTextColor = '#aaaaaa'
-              onChangeText = {(text) => this.state.title = text}
+              onChangeText = {(text) => this.setState({title: text})}
               style={styles.title_text}
               returnKeyType='next'
               ref={ref => {this._titleInput = ref}}
@@ -173,7 +173,7 @@ export default class AddEvent extends PureComponent<Props> {
             <TextInput
               placeholder = {'Location'}
               placeholderTextColor = '#aaaaaa'
-              onChangeText = {(text) => this.state.location = text}
+              onChangeText = {(text) => this.setState({location: text})}
               style={styles.location_text}
               returnKeyType='next'
               ref={ref => {this._locationInput = ref}}

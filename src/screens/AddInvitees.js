@@ -8,7 +8,12 @@ import {
   Button,
   TouchableHighlight,
   Platform,
+  TextInput
 } from 'react-native';
+
+import InviteeBox from '../components/InviteeBox';
+
+import firebase from 'react-native-firebase';
 
 export default class AddInvitees extends Component<Props> {
   static navigatorStyle = {
@@ -32,6 +37,10 @@ export default class AddInvitees extends Component<Props> {
 
   constructor(props) {
     super(props);
+    this.dataBaseRef = firebase.firestore().collection('users');
+    this.state = {
+      inviteeHits: []
+    }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
@@ -43,10 +52,51 @@ export default class AddInvitees extends Component<Props> {
     }
   }
 
+  renderSearchBar() {
+    return (
+      <View style={styles.search_bar}>
+        <TextInput
+          placeholder = {'Start typing your friends\' names'}
+          placeholderTextColor = '#aaaaaa'
+          style={styles.search_text}
+          returnKeyType='search'
+          onChangeText={(text) => this.retrieveInvitees(text)}
+        />
+      </View>
+    )
+  }
+
+  retrieveInvitees(text) {
+    let id = '';
+    this.dataBaseRef.get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            let data = doc.data();
+            if (data.displayName == text || data.email == text) {
+              let wrapper = {
+                displayName: data.displayName,
+                email: data.email
+              }
+              this.setState({inviteeHits: this.state.inviteeHits.concat(wrapper)})
+            }
+          })
+        })
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text>You have arrived at Invite Screen</Text>
+        {this.renderSearchBar()}
+        {this.state.inviteeHits.map((invitee) => {
+          return (
+            <TouchableHighlight
+              key={invitee.email}
+              onPress={() => this.props.onAddInvitee(invitee)}
+            >
+              <InviteeBox info={invitee}/>
+            </TouchableHighlight>
+          )
+        })}
       </View>
     );
   }
@@ -55,6 +105,17 @@ export default class AddInvitees extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  search_bar: {
+    paddingLeft: 15,
     backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#dddddd',
+    justifyContent: 'space-evenly',
+  },
+  search_text: {
+    height: 45,
+    fontSize: 17,
   }
 })
