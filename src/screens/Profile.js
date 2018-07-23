@@ -7,6 +7,7 @@ import {
   ScrollView,
   Button,
   TouchableHighlight,
+  Platform
 } from 'react-native';
 
 import firebase from 'react-native-firebase';
@@ -16,13 +17,47 @@ export default class Profile extends Component<Props> {
     largeTitle: true,
   }
 
+  static navigatorButtons = {
+    ...Platform.select({
+      ios: {
+        rightButtons: [
+          {
+            id: 'pending_events',
+            systemItem: 'organize'
+          }
+        ],
+      },
+      android: {
+        rightButtons: [
+          {
+            id: 'pending_events',
+            title: 'Pending'
+          }
+        ]
+      }
+    })
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       calendarList: [],
       currentUser: null,
     }
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.unsubscribe = null;
+  }
+
+  onNavigatorEvent(event) {
+    if (event.type == 'NavBarButtonPress') {
+      if (event.id == 'pending_events') {
+        this.props.navigator.showModal({
+          screen: 'PlenR.PendingEvents',
+          title: 'Pending Events',
+          animationType: 'slide-up'
+        });
+      }
+    }
   }
 
   componentDidMount() {

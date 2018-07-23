@@ -95,10 +95,9 @@ export default class OrganiseEvent extends PureComponent<Props> {
               {text: 'Cancel', onPress: () => {}, style: 'cancel'},
               {text: 'Send', onPress: () => {
                 this.props.onOrganiseEvent(eventData);
-                this.props.navigator.push({
-                  screen: 'PlenR.GroupCalendarView',
-                  title: this.state.title,
-                  passProps: eventData
+                this.props.navigator.showModal({
+                  screen: 'PlenR.PendingEvents',
+                  title: 'Pending Events'
                 })
               }}
             ],

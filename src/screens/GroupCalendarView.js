@@ -16,11 +16,14 @@ import {
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import firebase from 'react-native-firebase';
+
 import Event from '../util/Event';
 
 export default class GroupCalendarView extends PureComponent<Props> {
   static navigatorStyle = {
     navBarNoBorder: true,
+    largeTitle: false,
   };
 
   static navigatorButtons = {
@@ -28,16 +31,10 @@ export default class GroupCalendarView extends PureComponent<Props> {
       ios: {
         rightButtons: [
           {
-            id: 'create',
-            title: 'Create'
-          }
+            id: 'delete',
+            systemItem: 'trash'
+          },
         ],
-        leftButtons: [
-          {
-            id: 'close',
-            title: 'Close'
-          }
-        ]
       },
       android: {
         rightButtons: [
@@ -52,13 +49,35 @@ export default class GroupCalendarView extends PureComponent<Props> {
 
   constructor(props) {
     super(props);
+    this.state = {
+      currentUser: null
+    };
+    this.unsubscribe = null;
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+  }
+
+  componentDidMount() {
+    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      this.setState({currentUser: user});
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   onNavigatorEvent(event) {
     if (event.type == 'NavBarButtonPress') {
-      if (event.id == 'close') {
-        this.props.navigator.dismissModal();
+      if (event.id == 'delete') {
+        firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('pending_events')
+          .doc(this.props.id)
+          .delete()
+          .then(() => {
+            this.props.navigator.popToRoot();
+          })
+          .catch((error) => {
+            alert("Failed to delete!");
+          })
       }
     }
   }
