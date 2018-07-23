@@ -9,9 +9,7 @@ import {
   TouchableHighlight,
   Platform,
   TextInput,
-  DatePickerIOS,
-  LayoutAnimation,
-  KeyboardAvoidingView,
+  Alert
 } from 'react-native';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -20,7 +18,7 @@ import firebase from 'react-native-firebase';
 
 import Event from '../util/Event';
 
-export default class GroupCalendarView extends PureComponent<Props> {
+export default class PendingEventDetails extends PureComponent<Props> {
   static navigatorStyle = {
     navBarNoBorder: true,
     largeTitle: false,
@@ -31,8 +29,8 @@ export default class GroupCalendarView extends PureComponent<Props> {
       ios: {
         rightButtons: [
           {
-            id: 'delete',
-            systemItem: 'trash'
+            id: 'create',
+            systemItem: 'add',
           },
         ],
       },
@@ -68,16 +66,13 @@ export default class GroupCalendarView extends PureComponent<Props> {
 
   onNavigatorEvent(event) {
     if (event.type == 'NavBarButtonPress') {
-      if (event.id == 'delete') {
-        firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('pending_events')
-          .doc(this.props.id)
-          .delete()
-          .then(() => {
-            this.props.navigator.popToRoot();
-          })
-          .catch((error) => {
-            alert("Failed to delete!");
-          })
+      if (event.id == 'create') {
+        this.props.navigator.showModal({
+          screen: 'PlenR.AddEvent',
+          title: 'Add Event',
+          animationType: 'slide-up',
+          
+        });
       }
     }
   }
@@ -93,6 +88,30 @@ export default class GroupCalendarView extends PureComponent<Props> {
               })}
           </View>
         </ScrollView>
+        <View style={styles.delete_button}>
+          <Button onPress={() => Alert.alert(
+                'Confirm Event Deletion',
+                'Deleted events cannot be recovered!',
+                [
+                  {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                  {text: 'Confirm', onPress: () => {
+                    firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('pending_events')
+                      .doc(this.props.id)
+                      .delete()
+                      .then(() => {
+                        this.props.navigator.popToRoot();
+                      })
+                      .catch((error) => {
+                        alert("Failed to delete!");
+                      })
+                  }},
+                ]
+              )
+            }
+            title='Delete'
+            color='#ff0000'
+          />
+        </View>
       </View>
     )
   }
@@ -117,5 +136,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flex: 1,
     padding: 5
+  },
+  delete_button: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 45,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderColor: '#dddddd'
   }
 })

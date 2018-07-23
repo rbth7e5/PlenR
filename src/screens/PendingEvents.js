@@ -107,8 +107,8 @@ export default class PendingEvents extends Component<Props> {
                 subtitle={event.location}
                 onPress={() => {
                   this.props.navigator.push({
-                    screen: 'PlenR.GroupCalendarView',
-                    title: event.title,
+                    screen: 'PlenR.PendingEventDetails',
+                    title: 'Details',
                     passProps: event
                   })
                 }}

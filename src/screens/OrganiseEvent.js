@@ -19,7 +19,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import Event from '../util/Event';
 import InviteeBox from '../components/InviteeBox';
-import GroupCalendarView from './GroupCalendarView';
+import PendingEventDetails from './PendingEventDetails';
 
 export default class OrganiseEvent extends PureComponent<Props> {
   static navigatorStyle = {

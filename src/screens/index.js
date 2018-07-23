@@ -11,7 +11,7 @@ import GoogleLogin from './GoogleLogin';
 import Loading from './Loading';
 import CalendarBox from '../components/CalendarBox';
 import AddInvitees from './AddInvitees';
-import GroupCalendarView from './GroupCalendarView';
+import PendingEventDetails from './PendingEventDetails';
 import PendingEvents from './PendingEvents'
 
 export function registerScreens(store, Provider) {
@@ -26,6 +26,6 @@ export function registerScreens(store, Provider) {
   Navigation.registerComponent('PlenR.Loading', () => Loading);
   Navigation.registerComponent('PlenR.CalendarBox', () => CalendarBox, store, Provider);
   Navigation.registerComponent('PlenR.AddInvitees', () => AddInvitees, store, Provider);
-  Navigation.registerComponent('PlenR.GroupCalendarView', () => GroupCalendarView, store, Provider);
+  Navigation.registerComponent('PlenR.PendingEventDetails', () => PendingEventDetails, store, Provider);
   Navigation.registerComponent('PlenR.PendingEvents', () => PendingEvents, store, Provider);
 }
