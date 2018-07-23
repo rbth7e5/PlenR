@@ -61,6 +61,8 @@ export default class AddInvitees extends Component<Props> {
           style={styles.search_text}
           returnKeyType='search'
           onChangeText={(text) => this.retrieveInvitees(text)}
+          autocorrect={false}
+          autoCapitalize='none'
         />
       </View>
     )
@@ -70,16 +72,19 @@ export default class AddInvitees extends Component<Props> {
     let id = '';
     this.dataBaseRef.get()
         .then((querySnapshot) => {
+          let inviteeHits = [];
           querySnapshot.forEach((doc) => {
             let data = doc.data();
-            if (data.displayName == text || data.email == text) {
+            if (data.displayName.includes(text) || data.email.includes(text)) {
               let wrapper = {
+                id: doc.id,
                 displayName: data.displayName,
                 email: data.email
               }
-              this.setState({inviteeHits: this.state.inviteeHits.concat(wrapper)})
+              inviteeHits = inviteeHits.concat(wrapper);
             }
           })
+          this.setState({inviteeHits: inviteeHits});
         })
   }
 
@@ -90,7 +95,7 @@ export default class AddInvitees extends Component<Props> {
         {this.state.inviteeHits.map((invitee) => {
           return (
             <TouchableHighlight
-              key={invitee.email}
+              key={invitee.id}
               onPress={() => this.props.onAddInvitee(invitee)}
             >
               <InviteeBox info={invitee}/>

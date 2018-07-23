@@ -12,12 +12,14 @@ import {
   DatePickerIOS,
   LayoutAnimation,
   KeyboardAvoidingView,
+  Alert
 } from 'react-native';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Event from '../util/Event';
 import InviteeBox from '../components/InviteeBox';
+import GroupCalendarView from './GroupCalendarView';
 
 export default class OrganiseEvent extends PureComponent<Props> {
   static navigatorStyle = {
@@ -72,7 +74,37 @@ export default class OrganiseEvent extends PureComponent<Props> {
   onNavigatorEvent(event) {
     if (event.type == 'NavBarButtonPress') {
       if (event.id == 'done') {
-        this.props.navigator.dismissModal();
+        if (this.state.numOfInvitees == 0) {
+          alert('Why would you organise an event without inviting people? <_<');
+        } else if (this.state.title == '') {
+          alert('Your event needs a title dear...');
+        } else {
+          let eventData = {
+            title: this.state.title,
+            location: this.state.location,
+            start: this.state.start,
+            end: this.state.end,
+            notes: this.state.notes,
+            inviteesAdded: this.state.inviteesAdded
+          }
+          Alert.alert(
+            'Permissions Required',
+            'Requests for calendar access will be sent to the following invitees: ' +
+              this.state.inviteesAdded.map((invitee) => ('\n' + invitee.displayName)),
+            [
+              {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+              {text: 'Send', onPress: () => {
+                this.props.onOrganiseEvent(eventData);
+                this.props.navigator.push({
+                  screen: 'PlenR.GroupCalendarView',
+                  title: this.state.title,
+                  passProps: eventData
+                })
+              }}
+            ],
+            { cancelable: false }
+          )
+        }
       } else if (event.id == 'cancel') {
         this.props.navigator.dismissModal();
       }
@@ -210,7 +242,7 @@ export default class OrganiseEvent extends PureComponent<Props> {
               </View>
             </TouchableHighlight>
             {this.state.inviteesAdded.map((invitee) => {
-              return <InviteeBox key={invitee.email} info={invitee}/>
+              return <InviteeBox key={invitee.id} info={invitee}/>
             })}
             <TouchableHighlight
               onPress={() => {
