@@ -57,47 +57,49 @@ export default class PendingEventDetails extends PureComponent<Props> {
       day_selected: moment(this.props.start),
       events: []
     };
-    this.unsubscribe = null;
-    this.unsubscribe_users = null;
-    this.unsubscribe_calendars = null;
+    this.unsubscribe = [];
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
   componentDidMount() {
-    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    let unsubscription = firebase.auth().onAuthStateChanged((user) => {
       this.setState({currentUser: user});
     });
+    this.unsubscribe.push(unsubscription);
     let dataBaseRef = firebase.firestore().collection('users')
     this.props.event.inviteesAdded.forEach((invitee) => {
-      this.unsubscribe_users = dataBaseRef.onSnapshot((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if (doc.id == invitee.id) {
-            let displayName = doc.data().displayName;
-            let inviteeDataRef = dataBaseRef.doc(doc.id).collection('calendars');
-            this.unsubscribe_calendars = inviteeDataRef.onSnapshot((calendarSnapshot) => {
-              calendarSnapshot.forEach((calendar) => {
-                if (calendar.id == 'PlenR Calendar') {
-                  this.setState({
-                    events: this.state.events.concat(Calendar.parseForTimeline(calendar.data().events, displayName))
-                  });
-                } else {
-                  this.setState({
-                    events: this.state.events.concat(Calendar.parseGoogleForTimeline(calendar.data().items, displayName))
-                  });
-                }
-              })
-            })
-          }
+      this.unsubscribe.push(
+        dataBaseRef.onSnapshot((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if (doc.id == invitee.id) {
+              let displayName = doc.data().displayName;
+              let inviteeDataRef = dataBaseRef.doc(doc.id).collection('calendars');
+              this.unsubscribe.push(
+                inviteeDataRef.onSnapshot((calendarSnapshot) => {
+                  calendarSnapshot.forEach((calendar) => {
+                    if (calendar.id == 'PlenR Calendar') {
+                      this.setState({
+                        events: this.state.events.concat(Calendar.parseForTimeline(calendar.data().events, displayName))
+                      });
+                    } else {
+                      this.setState({
+                        events: this.state.events.concat(Calendar.parseGoogleForTimeline(calendar.data().items, displayName))
+                      });
+                    }
+                  })
+                })
+              )
+            }
+          })
         })
-      })
+      )
     })
-    //firebase.firestore().collection('users').where()
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
-    this.unsubscribe_users();
-    this.unsubscribe_calendars();
+    this.unsubscribe.forEach((unsubscription) => {
+      unsubscription();
+    });
   }
 
   onNavigatorEvent(event) {
@@ -256,7 +258,7 @@ const styles = StyleSheet.create({
   date_string: {
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
-    padding: 15,
+    padding: 12,
   },
   date_string_text: {
     fontSize: 17,
