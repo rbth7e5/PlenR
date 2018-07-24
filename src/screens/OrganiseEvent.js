@@ -62,7 +62,7 @@ export default class OrganiseEvent extends PureComponent<Props> {
       title: '',
       location: '',
       start: currentDate.toDate(),
-      end: currentDate.add(7, 'days').toDate(),
+      end: currentDate.add(6, 'days').toDate(),
       notes: '',
       dateStartPickerVisible: false,
       dateEndPickerVisible: false,
@@ -119,10 +119,10 @@ export default class OrganiseEvent extends PureComponent<Props> {
           onDateChange={(newDate) => {
             this.setState({
               start: newDate,
-              end: moment(newDate).add(7, 'days').toDate()
+              end: moment(newDate).add(6, 'days').toDate()
             })}
           }
-          minuteInterval={10}
+          mode='date'
          />
         </View>
       );
@@ -139,10 +139,10 @@ export default class OrganiseEvent extends PureComponent<Props> {
           date={this.state.end}
           onDateChange={(newDate) => {this.setState({
               end: newDate,
-              start: moment(newDate).subtract(7, 'days').toDate()
+              start: moment(newDate).subtract(6, 'days').toDate()
             })}
           }
-          minuteInterval={10}
+          mode='date'
          />
         </View>
       );
@@ -258,7 +258,6 @@ export default class OrganiseEvent extends PureComponent<Props> {
                 <View style={styles.start_underline}>
                   <Text style={styles.start_text}>Between</Text>
                   <Text style={styles.selection_text}>{this.formatDate(this.state.start)}</Text>
-                  <Text style={styles.selection_text}>{this.formatDateAMPM(this.state.start)}</Text>
                 </View>
               </View>
             </TouchableHighlight>
@@ -278,7 +277,6 @@ export default class OrganiseEvent extends PureComponent<Props> {
               <Text style={styles.start_text}>And</Text>
               <Text style={styles.selection_text}>{this.state.end.toDateString() == this.state.start.toDateString() ?
                     '' : this.formatDate(this.state.end)}</Text>
-              <Text style={styles.selection_text}>{this.formatDateAMPM(this.state.end)}</Text>
             </View>
             </TouchableHighlight>
             {this.renderEndDatePicker()}

@@ -109,7 +109,9 @@ export default class PendingEvents extends Component<Props> {
                   this.props.navigator.push({
                     screen: 'PlenR.PendingEventDetails',
                     title: 'Details',
-                    passProps: event
+                    passProps: {
+                      event: event
+                    }
                   })
                 }}
               />

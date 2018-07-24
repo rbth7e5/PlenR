@@ -48,6 +48,35 @@ export default class Calendar {
     return newCalendar;
   }
 
+  static parseForTimeline(events, name) {
+    let newEvents = [];
+    for (let event of events) {
+      let newEvent = {
+        start: moment(event.start).format('YYYY-MM-DD HH:mm:ss'),
+        end: moment(event.end).format('YYYY-MM-DD HH:mm:ss'),
+        title: name,
+        summary: 'something on'
+      }
+      newEvents.push(newEvent);
+    }
+    return newEvents;
+  }
+
+  static parseGoogleForTimeline(events, name) {
+    let newEvents = [];
+    for (let event of events) {
+      let localEvent = Event.formatGoogle(event);
+      let newEvent = {
+        start: moment(localEvent.start).format('YYYY-MM-DD HH:mm:ss'),
+        end: moment(localEvent.end).format('YYYY-MM-DD HH:mm:ss'),
+        title: name,
+        summary: 'likely free'
+      }
+      newEvents.push(newEvent);
+    }
+    return newEvents;
+  }
+
   toJSON() {
     return JSON.stringify(this.eventsList.toArray());
   }
