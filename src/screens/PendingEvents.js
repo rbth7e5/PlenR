@@ -110,7 +110,8 @@ export default class PendingEvents extends Component<Props> {
                     screen: 'PlenR.PendingEventDetails',
                     title: 'Details',
                     passProps: {
-                      event: event
+                      event: event,
+                      onAddEvent: this.props.onAddEvent
                     }
                   })
                 }}

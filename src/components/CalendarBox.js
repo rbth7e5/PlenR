@@ -58,7 +58,7 @@ export default class CalendarBox extends Component<Props> {
       }
     };
     request.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/'+this.props.calendar.id+'/events?access_token='+this.props.user.accessToken
-        + '&timeMin=' + moment().subtract(14, 'days').utc().format().toString());
+        + '&timeMin=' + moment().subtract(1, 'months').utc().format().toString());
     request.send();
   }
 
@@ -72,14 +72,16 @@ export default class CalendarBox extends Component<Props> {
 
   render() {
     return (
-      <View style={styles.calendar_container}>
-        <TouchableHighlight underlayColor='#f5f5f5' style={styles.activity} onPress={this.getEventsFromCalendar}>
-          {this.renderActivity()}
-        </TouchableHighlight>
-        <View style={styles.calendar_title}>
-          <Text style={styles.calendar_text}>{this.props.calendar.summary}</Text>
+      <TouchableHighlight onPress={this.getEventsFromCalendar}>
+        <View style={styles.calendar_container}>
+          <View style={styles.activity}>
+            {this.renderActivity()}
+          </View>
+          <View style={styles.calendar_title}>
+            <Text style={styles.calendar_text}>{this.props.calendar.summary}</Text>
+          </View>
         </View>
-      </View>
+      </TouchableHighlight>
     )
   }
 }
@@ -93,7 +95,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderBottomWidth: 1,
     borderColor: '#dddddd',
   },
   activity: {

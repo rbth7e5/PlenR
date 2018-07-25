@@ -41,6 +41,7 @@ export default class AddInvitees extends Component<Props> {
     this.state = {
       inviteeHits: []
     }
+    this.unsubscribe = null;
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
@@ -49,6 +50,12 @@ export default class AddInvitees extends Component<Props> {
       if (event.id == 'done') {
         this.props.navigator.dismissModal();
       }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
     }
   }
 
@@ -70,8 +77,7 @@ export default class AddInvitees extends Component<Props> {
 
   retrieveInvitees(text) {
     let id = '';
-    this.dataBaseRef.get()
-        .then((querySnapshot) => {
+    this.unsubscribe = this.dataBaseRef.onSnapshot((querySnapshot) => {
           let inviteeHits = [];
           querySnapshot.forEach((doc) => {
             let data = doc.data();

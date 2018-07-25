@@ -49,6 +49,12 @@ export default class MyPlenR extends Component<Props> {
         })
       }
     ],
+    leftButtons: [
+      {
+        id: 'pending_events',
+        systemItem: 'organize'
+      }
+    ]
   };
 
   constructor(props) {
@@ -68,6 +74,7 @@ export default class MyPlenR extends Component<Props> {
       google_calendars: null,
     }
     this.unsubscribe = null;
+    this.unsubscribe_from_calendars = null;
     this.dataBaseRef = firebase.firestore().collection('users');
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -86,8 +93,7 @@ export default class MyPlenR extends Component<Props> {
         //get calendars ref from user
         let calendarRef = this.dataBaseRef.doc(user.uid).collection('calendars')
         //get events from calendars
-        calendarRef.get()
-            .then((querySnapshot) => {
+        this.unsubscribe_from_calendars = calendarRef.onSnapshot((querySnapshot) => {
               let combined_google = [];
               querySnapshot.forEach((doc) => {
                 if (doc.id == 'PlenR Calendar') {
@@ -95,15 +101,13 @@ export default class MyPlenR extends Component<Props> {
                 } else {
                   combined_google = combined_google.concat(doc.data().items);
                 }
-              })
+              });
               this.setState({google_calendars: Calendar.parseGoogle(combined_google)});
-            }).catch((error) => {
+              this.props.navigator.dismissLightBox();
+            }, (error) => {
               alert('error retrieving events from database!');
               this.props.navigator.dismissLightBox();
-            })
-            .finally(() => {
-              this.props.navigator.dismissLightBox();
-            })
+            });
       } else {
         this.setState({google_calendars: null, local_calendar: new Calendar({title: 'Main Calendar'}),})
       }
@@ -112,6 +116,7 @@ export default class MyPlenR extends Component<Props> {
 
   componentWillUnmount() {
     this.unsubscribe();
+    this.unsubscribe_from_calendars();
   }
 
   onNavigatorEvent(event) {
@@ -131,6 +136,8 @@ export default class MyPlenR extends Component<Props> {
                 firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                     .doc('PlenR Calendar').set({
                       id: this.state.local_calendar.id,
+                      title: this.state.local_calendar.title,
+                      tag: 'local',
                       events: this.state.local_calendar.eventsList.toArray()
                     });
               }
@@ -159,6 +166,25 @@ export default class MyPlenR extends Component<Props> {
         } else {
           alert('You must be signed in to organise events!')
         }
+      }
+      if (event.id == 'pending_events') {
+        this.props.navigator.showModal({
+          screen: 'PlenR.PendingEvents',
+          title: 'Pending Events',
+          animationType: 'slide-up',
+          passProps: {
+            onAddEvent: (data) => {
+              this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
+              firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
+                  .doc('PlenR Calendar').set({
+                    id: this.state.local_calendar.id,
+                    title: this.state.local_calendar.title,
+                    tag: 'local',
+                    events: this.state.local_calendar.eventsList.toArray()
+                  });
+            }
+          }
+        });
       }
     }
   }
@@ -210,6 +236,8 @@ export default class MyPlenR extends Component<Props> {
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                         .doc('PlenR Calendar').set({
                           id: this.state.local_calendar.id,
+                          title: this.state.local_calendar.title,
+                          tag: 'local',
                           events: this.state.local_calendar.eventsList.toArray()
                         });
                   },
@@ -218,6 +246,8 @@ export default class MyPlenR extends Component<Props> {
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                         .doc('PlenR Calendar').set({
                           id: this.state.local_calendar.id,
+                          title: this.state.local_calendar.title,
+                          tag: 'local',
                           events: this.state.local_calendar.eventsList.toArray()
                         });
                   }
@@ -237,6 +267,8 @@ export default class MyPlenR extends Component<Props> {
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                         .doc('PlenR Calendar').set({
                           id: this.state.local_calendar.id,
+                          title: this.state.local_calendar.title,
+                          tag: 'local',
                           events: this.state.local_calendar.eventsList.toArray()
                         });
                   },
@@ -245,6 +277,8 @@ export default class MyPlenR extends Component<Props> {
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                         .doc('PlenR Calendar').set({
                           id: this.state.local_calendar.id,
+                          title: this.state.local_calendar.title,
+                          tag: 'local',
                           events: this.state.local_calendar.eventsList.toArray()
                         });
                   }

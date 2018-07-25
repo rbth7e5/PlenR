@@ -109,7 +109,26 @@ export default class PendingEventDetails extends PureComponent<Props> {
           screen: 'PlenR.AddEvent',
           title: 'Add Event',
           animationType: 'slide-up',
-
+          passProps: {
+            title: this.props.event.title,
+            location: this.props.event.location,
+            notes: this.props.event.notes,
+            year_selected: this.state.day_selected.year(),
+            month_selected: this.state.day_selected.month(),
+            day_selected: this.state.day_selected.date(),
+            onAddEvent: this.props.onAddEvent,
+            deletePendingEvent: () => {
+              firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('pending_events')
+                .doc(this.props.event.id)
+                .delete()
+                .then(() => {
+                  this.props.navigator.popToRoot();
+                })
+                .catch((error) => {
+                  alert("Failed to delete!");
+                })
+            }
+          }
         });
       }
     }
@@ -173,9 +192,6 @@ export default class PendingEventDetails extends PureComponent<Props> {
             })
           }
         </View>
-        <View style={styles.date_string}>
-          <Text style={styles.date_string_text}>{this.state.day_selected.format('dddd MMMM DD, YYYY')}</Text>
-        </View>
       </View>
     )
   }
@@ -188,7 +204,6 @@ export default class PendingEventDetails extends PureComponent<Props> {
     let {width} = Dimensions.get('window');
     return (
       <View style={styles.container}>
-        {this.renderWeekDays()}
         <EventCalendar
           eventTapped={this._eventTapped.bind(this)}
           events={this.state.events}
@@ -198,6 +213,7 @@ export default class PendingEventDetails extends PureComponent<Props> {
           upperCaseHeader
           uppercase
           scrollToFirst={false}
+          event={this.props.event}
         />
         <View style={styles.delete_button}>
           <Button onPress={() => Alert.alert(
@@ -241,54 +257,6 @@ const styles = StyleSheet.create({
   },
   gap_text: {
     color: '#666666'
-  },
-  weekday:{
-    flexDirection: 'row',
-    justifyContent: 'space-evenly'
-  },
-  weekday_view: {
-    width: 40,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  weekday_text: {
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  date_string: {
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    padding: 12,
-  },
-  date_string_text: {
-    fontSize: 17,
-  },
-  selected_view: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  selected_text: {
-    fontSize: 17,
-  },
-  day_view: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  day_text: {
-    fontSize: 17,
-  },
-  top_bar: {
-    backgroundColor: '#fff',
-    height: 120,
-    justifyContent: 'space-evenly'
   },
   delete_button: {
     justifyContent: 'center',

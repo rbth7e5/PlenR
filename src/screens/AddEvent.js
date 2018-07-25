@@ -54,13 +54,13 @@ export default class AddEvent extends PureComponent<Props> {
     var today = new Date();
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.state = {
-      title: '',
-      location: '',
+      title: this.props.title ? this.props.title : '',
+      location: this.props.location ? this.props.location : '',
       start: new Date(props.year_selected, props.month_selected, props.day_selected,
           today.getHours(), 0, 0, 0),
       end: new Date(props.year_selected, props.month_selected, props.day_selected, today.getHours() + 1,
           0, 0, 0),
-      notes: '',
+      notes: this.props.notes ? this.props.notes : '',
       dateStartPickerVisible: false,
       dateEndPickerVisible: false,
     }
@@ -80,7 +80,10 @@ export default class AddEvent extends PureComponent<Props> {
             notes: this.state.notes,
             allday: false,
           }));
-          this.props.navigator.dismissModal();
+          if (this.props.deletePendingEvent) {
+            this.props.deletePendingEvent();
+          }
+          this.props.navigator.dismissAllModals();
         }
       } else if (event.id == 'cancel') {
         this.props.navigator.dismissModal();
@@ -162,6 +165,7 @@ export default class AddEvent extends PureComponent<Props> {
           <View style={styles.gaps_between}></View>
           <View style={styles.title}>
             <TextInput
+              defaultValue = {this.state.title}
               placeholder = {'Title'}
               placeholderTextColor = '#aaaaaa'
               onChangeText = {(text) => this.setState({title: text})}
@@ -171,6 +175,7 @@ export default class AddEvent extends PureComponent<Props> {
               onSubmitEditing={() => {this._locationInput && this._locationInput.focus()}}
             />
             <TextInput
+              defaultValue = {this.state.location}
               placeholder = {'Location'}
               placeholderTextColor = '#aaaaaa'
               onChangeText = {(text) => this.setState({location: text})}
@@ -233,6 +238,7 @@ export default class AddEvent extends PureComponent<Props> {
           <View style={styles.gaps_between}></View>
           <View style={styles.notes}>
             <TextInput
+              defaultValue = {this.state.notes}
               placeholder = {'Notes'}
               placeholderTextColor = '#aaaaaa'
               onChangeText = {(text) => this.state.notes = text}

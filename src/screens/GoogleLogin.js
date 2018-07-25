@@ -15,6 +15,7 @@ import {
 import SortedList from '../util/SortedList';
 import Event from '../util/Event';
 import CalendarBox from '../components/CalendarBox';
+import styleConstructor from '../util/style';
 
 import firebase from 'react-native-firebase';
 
@@ -28,6 +29,7 @@ export default class GoogleLogin extends Component<Props> {
       signingIn: false,
       retrievingCalendars: false,
     };
+    this.styles = styleConstructor();
     this.unsubscribe = null;
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -167,14 +169,14 @@ export default class GoogleLogin extends Component<Props> {
       })
       if (this.state.signingIn) {
         return (
-          <View style={styles.signin}>
+          <View style={this.styles.box_container}>
             <ActivityIndicator size='large' color='#aaaaaa'/>
           </View>
         );
       }
       return (
-        <View style={styles.signin}>
-          <Text style={styles.signin_text}>Sign in to view Calendars</Text>
+        <View style={this.styles.box_container}>
+          <Text style={this.styles.title_three}>Sign in to view Calendars</Text>
         </View>
       );
     } else {
@@ -186,25 +188,25 @@ export default class GoogleLogin extends Component<Props> {
       })
       if (this.state.retrievingCalendars) {
         return (
-          <View style={styles.signin}>
+          <View style={this.styles.box_container}>
             <ActivityIndicator size='large' color='#aaaaaa'/>
           </View>
         );
       }
       return (
-        <ScrollView style={styles.container}>
-        <View style={styles.gap}></View>
-        <View style={styles.gap}></View>
-        {this.state.calendarListArray.map((calendar) => {
+        <ScrollView style={this.styles.container}>
+        <View style={this.styles.gap}></View>
+        <View style={this.styles.gap}>
+          <Text style={this.styles.gap_text}>Your Google Calendars</Text>
+        </View>
+        {this.state.calendarListArray.map((calendar, i) => {
           return (
-            <View key={calendar.id} style={styles.container}>
-              <CalendarBox
-                calendar={calendar}
-                user={this.state.user}
-                navigator={this.props.navigator}
-              />
-              <View style={styles.gap}></View>
-            </View>
+            <CalendarBox
+              key={i}
+              calendar={calendar}
+              user={this.state.user}
+              navigator={this.props.navigator}
+            />
           );
         })}
         </ScrollView>
@@ -214,23 +216,3 @@ export default class GoogleLogin extends Component<Props> {
 }
 
 var moment = require('moment');
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5'
-  },
-  signin: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  signin_text: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#aaaaaa'
-  },
-  gap: {
-    padding: 10
-  }
-})
