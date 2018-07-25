@@ -31,7 +31,7 @@ export default function styleConstructor () {
       backgroundColor: '#fff',
       borderTopWidth: 1,
       borderBottomWidth: 1,
-      borderColor: '#E6E8F0',
+      borderColor: '#ccc',
     },
     profile_info: {
       flex: 1,
@@ -73,16 +73,16 @@ export default function styleConstructor () {
       height: 50,
       borderTopWidth: 1,
       borderBottomWidth: 1,
-      borderColor: '#E6E8F0',
+      borderColor: '#ccc',
       backgroundColor: '#F5F5F6',
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
     },
-    calendar_box: {
+    list_box: {
       borderTopWidth: 1,
       borderBottomWidth: 1,
-      borderColor: '#f5f5f5',
+      borderColor: '#ccc',
       backgroundColor: '#fff',
     }
   }

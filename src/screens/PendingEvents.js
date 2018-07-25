@@ -10,8 +10,9 @@ import {
   Platform
 } from 'react-native';
 
-import { List, ListItem } from 'react-native-elements';
+import styleConstructor from '../util/style';
 
+import { List, ListItem } from 'react-native-elements';
 import firebase from 'react-native-firebase';
 
 export default class PendingEvents extends Component<Props> {
@@ -47,6 +48,7 @@ export default class PendingEvents extends Component<Props> {
       currentUser: null,
       pendingEvents: [],
     };
+    this.styles = styleConstructor();
     this.unsubscribe_pending_events = null;
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -91,65 +93,36 @@ export default class PendingEvents extends Component<Props> {
   render() {
     if (this.state.pendingEvents.length == 0) {
       return (
-        <View style={styles.empty_view}>
-          <Text style={styles.empty_view_text}>You have no pending events! Go organise some!</Text>
+        <View style={this.styles.box_container}>
+          <Text style={this.styles.gap_title}>You have no pending events! Go organise some!</Text>
         </View>
       )
     }
     return (
-      <ScrollView style={styles.container}>
-        <List>
-          {
-            this.state.pendingEvents.map((event, i) => (
-              <ListItem
-                key={i}
-                title={event.title}
-                subtitle={event.location}
-                onPress={() => {
-                  this.props.navigator.push({
-                    screen: 'PlenR.PendingEventDetails',
-                    title: 'Details',
-                    passProps: {
-                      event: event,
-                      onAddEvent: this.props.onAddEvent
-                    }
-                  })
-                }}
-              />
-            ))
-          }
-        </List>
+      <ScrollView style={this.styles.container}>
+        <View style={this.styles.gap}></View>
+      {
+        this.state.pendingEvents.map((event, i) => (
+          <ListItem
+            key={i}
+            onPress={() => {
+              this.props.navigator.push({
+                screen: 'PlenR.PendingEventDetails',
+                title: 'Details',
+                passProps: {
+                  event: event,
+                  onAddEvent: this.props.onAddEvent
+                }
+              })
+            }}
+            containerStyle={this.styles.list_box}
+            title={event.title}
+            subtitle={event.location}
+            underlayColor={'#F5F5F6'}
+          />
+        ))
+      }
       </ScrollView>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5'
-  },
-  empty_view: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  empty_view_text: {
-    padding: 20,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#aaaaaa',
-    textAlign: 'center'
-  },
-  account_container: {
-    padding: 15,
-    flex: 1,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#dddddd',
-    backgroundColor: '#fff'
-  },
-  gap: {
-    padding: 10,
-  }
-})

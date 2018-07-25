@@ -72,7 +72,10 @@ export default class CalendarBox extends Component<Props> {
 
   render() {
     return (
-      <TouchableHighlight onPress={this.getEventsFromCalendar}>
+      <TouchableHighlight
+        onPress={this.getEventsFromCalendar}
+        underlayColor={'#aaa'}
+      >
         <View style={styles.calendar_container}>
           <View style={styles.activity}>
             {this.renderActivity()}

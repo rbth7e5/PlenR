@@ -71,11 +71,12 @@ export default class Profile extends Component<Props> {
       <ScrollView style={this.styles.container}>
         <View style={this.styles.gap}></View>
         <TouchableHighlight
-        onPress={() => this.props.navigator.push({
-          screen: 'PlenR.GoogleLogin',
-          title: 'Account Details',
-          animated: true,
-        })}
+          onPress={() => this.props.navigator.push({
+            screen: 'PlenR.GoogleLogin',
+            title: 'Account Details',
+            animated: true,
+          })}
+          underlayColor={'#aaa'}
         >
           <View style={this.styles.profile}>
             {this.state.currentUser ? (
@@ -117,7 +118,7 @@ export default class Profile extends Component<Props> {
                 title={calendar.title}
                 subtitle={"Total events: " + calendar.numOfEvents.toString()}
                 hideChevron
-                containerStyle={this.styles.calendar_box}
+                containerStyle={this.styles.list_box}
               />
             )
           })

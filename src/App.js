@@ -9,6 +9,7 @@ import { Navigation } from 'react-native-navigation';
 import { registerScreens, registerScreenVisibilityListener } from './screens';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 registerScreens(store, Provider);
 
@@ -18,7 +19,6 @@ Navigation.startTabBasedApp({
       label: 'My PlenR',
       screen: 'PlenR.MyPlenR',
       icon: require('./icons/calendar.png'),
-      selectedIcon: require('./icons/calendar_selected.png'),
       navigatorStyle: {
         navBarSubtitleFontSize: 13,
         navBarTransparent: true,
@@ -31,14 +31,12 @@ Navigation.startTabBasedApp({
       screen: 'PlenR.Profile',
       title: 'Profile',
       icon: require('./icons/profile.png'),
-      selectedIcon: require('./icons/profile_selected.png'),
     },
     {
       label: 'Notifications',
       screen: 'PlenR.Notifications',
       title: 'Notifications',
       icon: require('./icons/notifications.png'),
-      selectedIcon: require('./icons/notifications_selected.png'),
     }
   ],
   appStyle: {
