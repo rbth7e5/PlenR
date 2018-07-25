@@ -34,21 +34,25 @@ export default class Profile extends Component<Props> {
   componentDidMount() {
     this.unsubscribe.push(firebase.auth().onAuthStateChanged((user) => {
       this.setState({currentUser: user});
-      this.unsubscribe.push(firebase.firestore().collection('users').doc(user.uid).collection('calendars')
-          .where("tag", "==", "local")
-          .onSnapshot((querySnapshot) => {
-            let retrieved = [];
-            querySnapshot.forEach((doc) => {
-              let data = doc.data();
-              let wrapper = {
-                id: doc.id,
-                title: data.title,
-                numOfEvents: data.events.length
-              }
-              retrieved.push(wrapper);
-            })
-            this.setState({ calendarList: retrieved });
-          }));
+      if (user) {
+        this.unsubscribe.push(firebase.firestore().collection('users').doc(user.uid).collection('calendars')
+            .where("tag", "==", "local")
+            .onSnapshot((querySnapshot) => {
+              let retrieved = [];
+              querySnapshot.forEach((doc) => {
+                let data = doc.data();
+                let wrapper = {
+                  id: doc.id,
+                  title: data.title,
+                  numOfEvents: data.events.length
+                }
+                retrieved.push(wrapper);
+              })
+              this.setState({ calendarList: retrieved });
+            }));
+      } else {
+        this.setState({calendarList: []});
+      }
     }));
   }
 
@@ -56,14 +60,6 @@ export default class Profile extends Component<Props> {
     this.unsubscribe.forEach((unsubscribe) => {
       unsubscribe();
     });
-  }
-
-  renderButtonTitle() {
-    if (this.state.currentUser) {
-      return this.state.currentUser.displayName || 'why do you not have a ****ing name';
-    } else {
-      return 'Sign in with Google';
-    }
   }
 
   render() {
@@ -82,19 +78,19 @@ export default class Profile extends Component<Props> {
             {this.state.currentUser ? (
               this.state.currentUser.photoURL ?
                 (<Avatar
-                  large
+                  medium
                   rounded
                   source={{uri: this.state.currentUser.photoURL}}
                   activeOpacity={0.7}
                 />) :
                 (<Avatar
-                  large
+                  medium
                   rounded
                   title=":("
                   activeOpacity={0.7}
                 />)) :
               (<Avatar
-                large
+                medium
                 rounded
                 title=":("
                 activeOpacity={0.7}
@@ -107,9 +103,16 @@ export default class Profile extends Component<Props> {
           </View>
         </TouchableHighlight>
         <View style={this.styles.gap}></View>
-        <View style={this.styles.gap}>
-          <Text style={this.styles.gap_text}>Your Local Calendars</Text>
-        </View>
+        {
+          this.state.currentUser ?
+            (
+              <View style={this.styles.gap}>
+                <Text style={this.styles.gap_text}>Your Local Calendars</Text>
+              </View>
+
+            ) :
+            null
+        }
         {
           this.state.calendarList.map((calendar, i) => {
             return (

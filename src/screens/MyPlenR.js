@@ -157,7 +157,6 @@ export default class MyPlenR extends Component<Props> {
               year_selected: this.state.currentTime.year(),
               month_selected: this.state.currentTime.month(),
               day_selected: this.state.currentTime.date(),
-              currentUser: this.state.currentUser,
               onOrganiseEvent: (data) => {
                 firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('pending_events')
                     .add(data);
