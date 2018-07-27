@@ -18,7 +18,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import firebase from 'react-native-firebase';
 
-import EventCalendar from 'react-native-events-calendar';
+import EventCalendar from '../components/timeline_view/EventCalendar';
 
 import Event from '../util/Event';
 import Calendar from '../util/Calendar';
@@ -55,45 +55,61 @@ export default class PendingEventDetails extends PureComponent<Props> {
     this.state = {
       currentUser: null,
       day_selected: moment(this.props.start),
-      events: []
+      events: [],
+      invitees_without_access: []
     };
     this.unsubscribe = [];
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
   componentDidMount() {
-    let unsubscription = firebase.auth().onAuthStateChanged((user) => {
+    this.unsubscribe.push(firebase.auth().onAuthStateChanged((user) => {
       this.setState({currentUser: user});
-    });
-    this.unsubscribe.push(unsubscription);
-    let dataBaseRef = firebase.firestore().collection('users')
-    this.props.event.inviteesAdded.forEach((invitee) => {
-      this.unsubscribe.push(
-        dataBaseRef.onSnapshot((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (doc.id == invitee.id) {
-              let displayName = doc.data().displayName;
-              let inviteeDataRef = dataBaseRef.doc(doc.id).collection('calendars');
-              this.unsubscribe.push(
-                inviteeDataRef.onSnapshot((calendarSnapshot) => {
-                  calendarSnapshot.forEach((calendar) => {
-                    if (calendar.id == 'PlenR Calendar') {
-                      this.setState({
-                        events: this.state.events.concat(Calendar.parseForTimeline(calendar.data().events, displayName))
-                      });
-                    } else {
-                      this.setState({
-                        events: this.state.events.concat(Calendar.parseGoogleForTimeline(calendar.data().items, displayName))
-                      });
+      let dataBaseRef = firebase.firestore().collection('users')
+      this.props.event.inviteesAdded.forEach((invitee) => {
+        this.unsubscribe.push(
+          dataBaseRef.onSnapshot((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              if (doc.id == invitee.id) {
+                let access = false;
+                dataBaseRef.doc(doc.id).collection('access_granted_users').doc(user.uid)
+                  .get()
+                  .then((granted_user) => {
+                    if (granted_user.exists) {
+                      access = granted_user.data().granted;
                     }
                   })
-                })
-              )
-            }
+                  .then(() => {
+                    if (access) {
+                      let displayName = doc.data().displayName;
+                      let inviteeDataRef = dataBaseRef.doc(doc.id).collection('calendars');
+                      this.unsubscribe.push(
+                        inviteeDataRef.onSnapshot((calendarSnapshot) => {
+                          calendarSnapshot.forEach((calendar) => {
+                            if (calendar.id == 'PlenR Calendar') {
+                              this.setState({
+                                events: this.state.events.concat(Calendar.parseForTimeline(calendar.data().events, displayName))
+                              });
+                            } else {
+                              this.setState({
+                                events: this.state.events.concat(Calendar.parseGoogleForTimeline(calendar.data().items, displayName))
+                              });
+                            }
+                          })
+                        })
+                      )
+                    } else {
+                      this.setState({
+                        invitees_without_access: this.state.invitees_without_access.concat(doc.data().displayName)
+                      })
+                    }
+                  })
+              }
+            })
           })
-        })
-      )
-    })
+        )
+      })
+    }));
   }
 
   componentWillUnmount() {
@@ -134,84 +150,29 @@ export default class PendingEventDetails extends PureComponent<Props> {
     }
   }
 
-  renderWeekDays() {
-    const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
-    let start = moment(this.props.event.start);
-    let week = []
-    while (start.isBefore(this.props.event.end, 'day')) {
-      week.push(start);
-      start = start.clone().add(1, 'days');
-    }
-    return (
-      <View style={styles.top_bar}>
-        <View style={styles.weekday}>
-          {
-            week.map((day, i) => {
-              return (
-                <View key={i} style={styles.weekday_view}>
-                  <Text style={styles.weekday_text}>{weekDays[day.day()]}</Text>
-                </View>
-              )
-            })
-          }
-        </View>
-        <View style={styles.weekday}>
-          {
-            week.map((day, i) => {
-              if (day.isSame(this.state.day_selected, 'day')) {
-                return (
-                    <TouchableWithoutFeedback
-                      key={i}
-                      onPress={() => {
-                        this.setState({ day_selected: day })
-                      }}
-                      underlayColor="#fff"
-                      style={{borderRadius: 10}}
-                    >
-                      <View style={styles.selected_view}>
-                        <Text style={styles.selected_text}>{day.format('DD')}</Text>
-                      </View>
-                    </TouchableWithoutFeedback>
-
-                )
-              }
-              return (
-                <TouchableWithoutFeedback
-                  key={i}
-                  onPress={() => {
-                    this.setState({ day_selected: day })
-                  }}
-                  underlayColor="#f5f5f5"
-                  style={{borderRadius: 10}}
-                >
-                  <View style={styles.day_view}>
-                    <Text style={styles.day_text}>{day.format('DD')}</Text>
-                  </View>
-                </TouchableWithoutFeedback>
-              )
-            })
-          }
-        </View>
-      </View>
-    )
-  }
-
   _eventTapped(event) {
     alert(JSON.stringify(event));
   }
 
   render(){
+    if (this.state.invitees_without_access.length !== 0) {
+      alert('You do not have access to the following invitees\' calendars: ' +
+        this.state.invitees_without_access.map((invitee) => {
+          return '\n' + invitee;
+        }))
+    }
     let {width} = Dimensions.get('window');
     return (
       <View style={styles.container}>
         <EventCalendar
           eventTapped={this._eventTapped.bind(this)}
           events={this.state.events}
-          width={width}
+          width={width - 20}
           initDate={this.state.day_selected.format('YYYY-MM-DD')}
           scrollToFirst
           upperCaseHeader
           uppercase
+          dateString
           scrollToFirst={false}
           event={this.props.event}
         />
@@ -249,7 +210,9 @@ var moment = require('moment');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: '#fff',
   },
   gaps_between: {
     padding: 10,

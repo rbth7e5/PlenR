@@ -18,6 +18,7 @@ import { List, ListItem, Avatar } from 'react-native-elements';
 export default class Profile extends Component<Props> {
   static navigatorStyle = {
     largeTitle: true,
+    navBarNoBorder: true
   }
 
   constructor(props) {
@@ -65,7 +66,6 @@ export default class Profile extends Component<Props> {
   render() {
     return (
       <ScrollView style={this.styles.container}>
-        <View style={this.styles.gap}></View>
         <TouchableHighlight
           onPress={() => this.props.navigator.push({
             screen: 'PlenR.GoogleLogin',
@@ -78,19 +78,19 @@ export default class Profile extends Component<Props> {
             {this.state.currentUser ? (
               this.state.currentUser.photoURL ?
                 (<Avatar
-                  medium
+                  large
                   rounded
                   source={{uri: this.state.currentUser.photoURL}}
                   activeOpacity={0.7}
                 />) :
                 (<Avatar
-                  medium
+                  large
                   rounded
                   title=":("
                   activeOpacity={0.7}
                 />)) :
               (<Avatar
-                medium
+                large
                 rounded
                 title=":("
                 activeOpacity={0.7}

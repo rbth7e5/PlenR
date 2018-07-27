@@ -1,5 +1,7 @@
 
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Dimensions } from 'react-native'
+
+var {height, width} = Dimensions.get('window');
 
 export default function styleConstructor () {
   let style = {
@@ -10,28 +12,62 @@ export default function styleConstructor () {
     box_container : {
       flex: 1,
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      backgroundColor: '#f5f5f5'
+    },
+    card_container: {
+      justifyContent: 'space-between',
+      height: height * 4/5,
+      width: width - 20,
+      borderRadius: 15,
+      backgroundColor: '#fff',
+      padding: 20,
+      shadowColor: '#555555',
+      shadowOffset: {height: 1},
+      shadowOpacity: 50,
+      shadowRadius: 5,
     },
     gap: {
       padding: 10,
-      paddingLeft: 15
+      paddingLeft: 15,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     gap_text: {
       color: '#666666'
     },
     gap_title: {
       fontSize: 20,
-      color: '#666666'
+      color: '#666666',
+      textAlign: 'center',
+      paddingHorizontal: 50
     },
     profile: {
       flexDirection: 'row',
-      paddingRight: 30,
-      paddingLeft: 30,
+      paddingRight: 15,
+      paddingLeft: 15,
       paddingVertical: 15,
       backgroundColor: '#fff',
-      borderTopWidth: 1,
       borderBottomWidth: 1,
       borderColor: '#ccc',
+    },
+    card_header: {
+      flexDirection: 'row',
+      borderTopStartRadius: 15,
+      paddingBottom: 10,
+      borderBottomWidth: 1,
+      borderColor: '#dddddd',
+    },
+    card_margin: {
+      paddingTop: 15,
+    },
+    card_margin_text: {
+      fontSize: 17,
+      color: '#555555'
+    },
+    card_content: {
+      flexDirection: 'row',
+      paddingTop: 15,
     },
     profile_info: {
       flex: 1,

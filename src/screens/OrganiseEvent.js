@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import firebase from 'react-native-firebase';
 
 import Event from '../util/Event';
 import InviteeBox from '../components/InviteeBox';
@@ -59,6 +60,7 @@ export default class OrganiseEvent extends PureComponent<Props> {
         today.getHours(), 0, 0, 0));
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.state = {
+      currentUser: null,
       title: '',
       location: '',
       start: currentDate.toDate(),
@@ -69,6 +71,20 @@ export default class OrganiseEvent extends PureComponent<Props> {
       numOfInvitees: 0,
       inviteesAdded: []
     }
+    this.dataBaseRef = firebase.firestore().collection('users');
+    this.unsubscribe = [];
+  }
+
+  componentDidMount() {
+    this.unsubscribe.push(firebase.auth().onAuthStateChanged((user) => {
+      this.setState({currentUser: user});
+    }));
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe.forEach((unsubscribe) => {
+      unsubscribe();
+    });
   }
 
   onNavigatorEvent(event) {
@@ -94,6 +110,19 @@ export default class OrganiseEvent extends PureComponent<Props> {
             [
               {text: 'Cancel', onPress: () => {}, style: 'cancel'},
               {text: 'Send', onPress: () => {
+                if (this.state.currentUser) {
+                  let invitation = {
+                    seen: false,
+                    host_id: this.state.currentUser.uid,
+                    host_name: this.state.currentUser.displayName,
+                    host_photo: this.state.currentUser.photoURL,
+                    ...eventData
+                  }
+                  this.state.inviteesAdded.forEach((invitee) => {
+                    this.dataBaseRef.doc(invitee.id).collection('notifications')
+                      .add(invitation);
+                  })
+                }
                 this.props.onOrganiseEvent(eventData);
                 this.props.navigator.showModal({
                   screen: 'PlenR.PendingEvents',

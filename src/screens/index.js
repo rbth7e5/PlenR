@@ -12,7 +12,9 @@ import Loading from './Loading';
 import CalendarBox from '../components/CalendarBox';
 import AddInvitees from './AddInvitees';
 import PendingEventDetails from './PendingEventDetails';
-import PendingEvents from './PendingEvents'
+import PendingEvents from './PendingEvents';
+import NotificationBox from '../components/NotificationBox';
+import InvitationCard from './InvitationCard';
 
 export function registerScreens(store, Provider) {
   Navigation.registerComponent('PlenR.MyPlenR', () => MyPlenR, store, Provider);
@@ -28,4 +30,6 @@ export function registerScreens(store, Provider) {
   Navigation.registerComponent('PlenR.AddInvitees', () => AddInvitees, store, Provider);
   Navigation.registerComponent('PlenR.PendingEventDetails', () => PendingEventDetails, store, Provider);
   Navigation.registerComponent('PlenR.PendingEvents', () => PendingEvents, store, Provider);
+  Navigation.registerComponent('PlenR.NotificationBox', () => NotificationBox);
+  Navigation.registerComponent('PlenR.InvitationCard', () => InvitationCard);
 }

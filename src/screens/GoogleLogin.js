@@ -20,6 +20,9 @@ import styleConstructor from '../util/style';
 import firebase from 'react-native-firebase';
 
 export default class GoogleLogin extends Component<Props> {
+  static navigatorStyle = {
+    navBarNoBorder: false
+  }
   constructor(props) {
     super(props);
     this.state = {
