@@ -50,7 +50,7 @@ export default class Notifications extends Component<Props> {
                       type: 'push',
                       ...wrapper
                     }, // simple serializable object that will pass as props to the in-app notification (optional)
-                    autoDismissTimerSec: 2 // auto dismiss notification in seconds
+                    autoDismissTimerSec: 2000 // auto dismiss notification in seconds
                   });
                 }
                 retrieved.push(wrapper);

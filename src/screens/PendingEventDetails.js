@@ -168,7 +168,8 @@ export default class PendingEventDetails extends PureComponent<Props> {
           eventTapped={this._eventTapped.bind(this)}
           events={this.state.events}
           width={width - 20}
-          initDate={this.state.day_selected.format('YYYY-MM-DD')}
+          initDate={moment(this.props.start).add(4, 'days').format('YYYY-MM-DD')}
+          size={4}
           scrollToFirst
           upperCaseHeader
           uppercase

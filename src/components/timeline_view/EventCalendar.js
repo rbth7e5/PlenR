@@ -66,7 +66,7 @@ export default class EventCalendar extends React.Component {
   }
 
   _goToPage(index) {
-    if (index <= 0 || index >= this.props.size * 2) {
+    if (index < 0 || index >= this.props.size * 2) {
       return
     }
     const date = moment(this.props.initDate).add(index - this.props.size, 'days')
@@ -98,12 +98,13 @@ export default class EventCalendar extends React.Component {
         <View style={this.styles.weekday}>
           {
             week.map((day, i) => {
+              let diff_days = day.startOf('day').diff(this.state.date.startOf('day'), 'days');
               if (day.isSame(this.state.date, 'day')) {
                 return (
                     <TouchableWithoutFeedback
                       key={i}
                       onPress={() => {
-                        this._goToPage(this.state.index + (day.date() - this.state.date.date()))
+                        this._goToPage(this.state.index + diff_days)
                       }}
                       underlayColor="#fff"
                       style={{borderRadius: 10}}
@@ -118,7 +119,7 @@ export default class EventCalendar extends React.Component {
                 <TouchableWithoutFeedback
                   key={i}
                   onPress={() => {
-                    this._goToPage(this.state.index + (day.date() - this.state.date.date()))
+                    this._goToPage(this.state.index + diff_days);
                   }}
                   underlayColor="#f5f5f5"
                   style={{borderRadius: 10}}
