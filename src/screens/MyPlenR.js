@@ -173,7 +173,8 @@ export default class MyPlenR extends Component<Props> {
           title: 'Pending Events',
           animationType: 'slide-up',
           passProps: {
-            onAddEvent: (data) => {
+            onAddEvent: (data, invitees) => {
+              console.warn(invitees);
               this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
               firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                   .doc('PlenR Calendar').set({
@@ -182,6 +183,23 @@ export default class MyPlenR extends Component<Props> {
                     tag: 'local',
                     events: this.state.local_calendar.eventsList.toArray()
                   });
+              invitees.forEach((invitee) => {
+                let inviteeRef = firebase.firestore().collection('users').doc(invitee.id).collection('calendars').doc('PlenR Calendar');
+                firebase.firestore()
+                  .runTransaction((transaction) => {
+                    return transaction.get(inviteeRef).then((doc) => {
+                      if (!doc.data().events) {
+                        transaction.set({
+                          events: [data]
+                        });
+                      } else {
+                        let events = doc.data().events;
+                        events.push(data);
+                        transaction.update(inviteeRef, { events: events });
+                      }
+                    })
+                  })
+              })
             }
           }
         });
@@ -356,6 +374,7 @@ export default class MyPlenR extends Component<Props> {
             />}
           />
         </View>
+        <View style={{padding: 5, backgroundColor: '#f5f5f5'}}></View>
         <ScrollView style={styles.events_view}>
           <View style={styles.events}>
             {this.renderRetrievedEvents(this.retrieveEvents(this.state.currentTime))}

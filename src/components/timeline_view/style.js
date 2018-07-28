@@ -1,7 +1,7 @@
 // @flow
 import { StyleSheet } from 'react-native'
 
-const calendarHeight = 2400
+const calendarHeight = 1680
 // const eventPaddingLeft = 4
 const leftMargin = 50 - 1
 
@@ -21,7 +21,6 @@ export default function styleConstructor (
     header: {
       paddingHorizontal: 30,
       height: 50,
-      borderTopWidth: 1,
       borderBottomWidth: 1,
       borderColor: 'rgb(216,216,216)',
       backgroundColor: '#fff',
@@ -44,7 +43,7 @@ export default function styleConstructor (
       opacity: 0.8,
       borderColor: 'rgb(216,216,216)',
       borderWidth: 1,
-      borderRadius: 5,
+      borderRadius: 10,
       paddingLeft: 4,
       minHeight: 25,
       flex: 1,
@@ -135,8 +134,10 @@ export default function styleConstructor (
     },
     top_bar: {
       backgroundColor: '#fff',
-      height: 80,
-      justifyContent: 'space-evenly'
+      height: 70,
+      justifyContent: 'space-evenly',
+      borderBottomWidth: 1,
+      borderColor: 'rgb(216,216,216)'
     },
   }
   return StyleSheet.create(style)

@@ -250,6 +250,7 @@ export default class OrganiseEvent extends PureComponent<Props> {
                     title: 'Add Invitees',
                     animationType: 'slide-up',
                     passProps: {
+                      currentUserId: this.state.currentUser.uid,
                       onAddInvitee: (invitee) => {
                         this.setState({
                           inviteesAdded: this.state.inviteesAdded.concat(invitee),

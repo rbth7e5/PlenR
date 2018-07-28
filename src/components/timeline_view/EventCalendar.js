@@ -59,6 +59,7 @@ export default class EventCalendar extends React.Component {
         eventTapped={this.props.eventTapped}
         events={item}
         width={width}
+        scrollEnabled={this.props.scrollEnabled}
         styles={this.styles}
         scrollToFirst={scrollToFirst}
       />

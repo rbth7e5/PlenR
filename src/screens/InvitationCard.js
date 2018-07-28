@@ -5,7 +5,8 @@ import {
   Text,
   View,
   Dimensions,
-  Button
+  Button,
+  ScrollView
 } from 'react-native';
 
 import styleConstructor from '../util/style';
@@ -76,12 +77,13 @@ export default class InvitationCard extends Component<Props> {
             <Text style={this.styles.subhead}>{moment(start).format('DD MMM YYYY') + ' to ' + moment(end).format('DD MMM YYYY')}</Text>
           </View>
         </View>
+        <ScrollView>
         <CardContent margin_text={'Event Title: '} text={title}/>
         {
           location == '' ? null : (<CardContent margin_text={'Location: '} text={location}/>)
         }
         {
-          notes == '' ? null : (<CardContent margin_text={'Notes: '} text={notes}/>)
+          notes == '' ? null : (<CardContent margin_text={'Notes: \n'} text={notes}/>)
         }
         <View style={this.styles.gap}>
           <Text style={this.styles.gap_text}>Here is your schedule for that week</Text>
@@ -90,13 +92,16 @@ export default class InvitationCard extends Component<Props> {
           eventTapped={this._eventTapped.bind(this)}
           events={this.state.events}
           width={width - 60}
-          initDate={moment(start).format('YYYY-MM-DD')}
+          initDate={moment(start).add(4, 'days').format('YYYY-MM-DD')}
+          size={4}
           scrollToFirst
           upperCaseHeader
           uppercase
+          scrollEnabled={false}
           scrollToFirst={false}
           event={this.props}
         />
+        </ScrollView>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'}}>
           <View style={{alignItems: 'center'}}>
             <Button
@@ -148,13 +153,11 @@ class CardContent extends Component<Props> {
 
   render() {
     return (
-      <View style={this.styles.card_header}>
-        <View style={this.styles.card_margin}>
+      <View style={this.styles.card_content}>
+        <Text>
           <Text style={this.styles.card_margin_text}>{this.props.margin_text}</Text>
-        </View>
-        <View style={this.styles.card_content}>
           <Text style={this.styles.body}>{this.props.text}</Text>
-        </View>
+        </Text>
       </View>
     )
   }

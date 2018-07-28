@@ -12,7 +12,7 @@ import _ from 'lodash'
 
 const LEFT_MARGIN = 60 - 1
 // const RIGHT_MARGIN = 10
-const CALENDER_HEIGHT = 2400
+const CALENDER_HEIGHT = 1680
 // const EVENT_TITLE_HEIGHT = 15
 const TEXT_LINE_HEIGHT = 17
 // const MIN_EVENT_TITLE_WIDTH = 20
@@ -177,7 +177,8 @@ export default class DayView extends React.PureComponent {
     return (
       <ScrollView ref={ref => (this._scrollView = ref)}
         contentContainerStyle={[styles.contentStyle, { width: this.props.width }]}
-        contentOffset={{x: 0, y: 600}}
+        contentOffset={{x: 0, y: 0}}
+        scrollEnabled={this.props.scrollEnabled}
       >
         {this._renderLines()}
         {this._renderEvents()}

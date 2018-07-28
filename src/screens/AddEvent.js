@@ -79,7 +79,7 @@ export default class AddEvent extends PureComponent<Props> {
             end: this.state.end,
             notes: this.state.notes,
             allday: false,
-          }));
+          }), this.props.inviteesAdded);
           if (this.props.deletePendingEvent) {
             this.props.deletePendingEvent();
           }

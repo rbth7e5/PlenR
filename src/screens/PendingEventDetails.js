@@ -129,6 +129,7 @@ export default class PendingEventDetails extends PureComponent<Props> {
             title: this.props.event.title,
             location: this.props.event.location,
             notes: this.props.event.notes,
+            inviteesAdded: this.props.event.inviteesAdded,
             year_selected: this.state.day_selected.year(),
             month_selected: this.state.day_selected.month(),
             day_selected: this.state.day_selected.date(),
@@ -168,12 +169,13 @@ export default class PendingEventDetails extends PureComponent<Props> {
           eventTapped={this._eventTapped.bind(this)}
           events={this.state.events}
           width={width - 20}
-          initDate={moment(this.props.start).add(4, 'days').format('YYYY-MM-DD')}
+          initDate={moment(this.props.event.start).add(4, 'days').format('YYYY-MM-DD')}
           size={4}
           scrollToFirst
           upperCaseHeader
           uppercase
           dateString
+          scrollEnabled
           scrollToFirst={false}
           event={this.props.event}
         />

@@ -54,13 +54,9 @@ export default function styleConstructor () {
     },
     card_header: {
       flexDirection: 'row',
+      width: width - 20,
       borderTopStartRadius: 15,
       paddingBottom: 10,
-      borderBottomWidth: 1,
-      borderColor: '#dddddd',
-    },
-    card_margin: {
-      paddingTop: 15,
     },
     card_margin_text: {
       fontSize: 17,
@@ -90,7 +86,7 @@ export default function styleConstructor () {
       fontWeight: 'bold'
     },
     body: {
-      fontSize: 17
+      fontSize: 17,
     },
     subhead: {
       fontSize: 15,

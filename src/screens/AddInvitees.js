@@ -80,14 +80,16 @@ export default class AddInvitees extends Component<Props> {
     this.unsubscribe = this.dataBaseRef.onSnapshot((querySnapshot) => {
           let inviteeHits = [];
           querySnapshot.forEach((doc) => {
-            let data = doc.data();
-            if (data.displayName.includes(text) || data.email.includes(text)) {
-              let wrapper = {
-                id: doc.id,
-                displayName: data.displayName,
-                email: data.email
+            if (doc.id !== this.props.currentUserId) {
+              let data = doc.data();
+              if (data.displayName.includes(text) || data.email.includes(text)) {
+                let wrapper = {
+                  id: doc.id,
+                  displayName: data.displayName,
+                  email: data.email
+                }
+                inviteeHits = inviteeHits.concat(wrapper);
               }
-              inviteeHits = inviteeHits.concat(wrapper);
             }
           })
           this.setState({inviteeHits: inviteeHits});
