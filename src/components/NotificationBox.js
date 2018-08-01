@@ -8,6 +8,7 @@ import {
   ScrollView,
   Button,
   TouchableHighlight,
+  TouchableOpacity,
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
@@ -24,23 +25,38 @@ export default class NotificationBox extends Component<Props> {
     let { type, title, host_name, host_photo } = this.props;
     if (type == 'push') {
       return (
-        <View style={styles.push_container}>
-          <Avatar
-            medium
-            rounded
-            source={{uri: host_photo}}
-            activeOpacity={0.7}
-          />
-          <View style={styles.info}>
-            <Text>
-              <Text style={styles.title}>{host_name}</Text>
-              <Text style={styles.text}>{' has invited you for '}</Text>
-              <Text style={styles.title}>{title}</Text>
-              <Text style={styles.text}>{'! '}</Text>
-              <Text style={styles.text}>Your permission to access your schedule is required.</Text>
-            </Text>
+        <TouchableOpacity
+          onPress={() => {
+            this.props.onSeen();
+            Navigation.showLightBox({
+              screen: 'PlenR.InvitationCard',
+              passProps: this.props,
+              style: {
+                backgroundBlur: 'light',
+                backgroundColor: 'hsla(360, 100%, 100%, 0.0)',
+                tapBackgroundToDismiss: true
+              }
+            })
+          }}
+        >
+          <View style={styles.push_container}>
+            <Avatar
+              medium
+              rounded
+              source={{uri: host_photo}}
+              activeOpacity={0.7}
+            />
+            <View style={styles.info}>
+              <Text>
+                <Text style={styles.title}>{host_name}</Text>
+                <Text style={styles.text}>{' has invited you for '}</Text>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.text}>{'! '}</Text>
+                <Text style={styles.text}>Your permission to access your schedule is required.</Text>
+              </Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       )
     }
     return (
@@ -56,7 +72,6 @@ export default class NotificationBox extends Component<Props> {
               tapBackgroundToDismiss: true
             }
           })
-
         }}
       >
       <View style={styles.container}>

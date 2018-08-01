@@ -47,10 +47,17 @@ export default class Notifications extends Component<Props> {
                   this.props.navigator.showInAppNotification({
                     screen: "PlenR.NotificationBox", // unique ID registered with Navigation.registerScreen
                     passProps: {
+                      onSeen: () => {
+                        firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('notifications')
+                          .doc(wrapper.id)
+                          .update({
+                            seen: true
+                          });
+                      },
                       type: 'push',
                       ...wrapper
                     }, // simple serializable object that will pass as props to the in-app notification (optional)
-                    autoDismissTimerSec: 2000 // auto dismiss notification in seconds
+                    autoDismissTimerSec: 2 // auto dismiss notification in seconds
                   });
                 }
                 retrieved.push(wrapper);

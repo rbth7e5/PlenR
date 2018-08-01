@@ -17,7 +17,7 @@ export default function styleConstructor () {
     },
     card_container: {
       justifyContent: 'space-between',
-      height: height * 5/6,
+      height: height * 4/5,
       width: width - 20,
       borderRadius: 30,
       backgroundColor: '#fff',
