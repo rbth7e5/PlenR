@@ -39,17 +39,35 @@ export default class Profile extends Component<Props> {
         this.unsubscribe.push(firebase.firestore().collection('users').doc(user.uid).collection('calendars')
             .where("tag", "==", "local")
             .onSnapshot((querySnapshot) => {
-              let retrieved = [];
               querySnapshot.forEach((doc) => {
                 let data = doc.data();
-                let wrapper = {
-                  id: doc.id,
-                  title: data.title,
-                  numOfEvents: data.events ? data.events.length : 0
-                }
-                retrieved.push(wrapper);
+                doc.ref.collection('events').onSnapshot((eventsSnapshot) => {
+                  let count = 0;
+                  let exists = false;
+                  let index = 0;
+                  eventsSnapshot.forEach((event) => {
+                    count++;
+                  })
+                  let wrapper = {
+                    id: doc.id,
+                    title: data.title,
+                    numOfEvents: count
+                  }
+                  this.state.calendarList.forEach((calendar, i) => {
+                    if (calendar.id == doc.id) {
+                      exists = true;
+                      index = i;
+                    }
+                  })
+                  if (!exists) {
+                    this.setState({ calendarList: this.state.calendarList.concat(wrapper) });
+                  } else {
+                    let clone = this.state.calendarList.slice();
+                    clone[index] = wrapper;
+                    this.setState({ calendarList: clone})
+                  }
+                })
               })
-              this.setState({ calendarList: retrieved });
             }));
       } else {
         this.setState({calendarList: []});
