@@ -145,14 +145,6 @@ export default class MyPlenR extends Component<Props> {
               month_selected: this.state.currentTime.month(),
               day_selected: this.state.currentTime.date(),
               onAddEvent: (data) => {
-                this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
-                firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                    .doc('PlenR Calendar').set({
-                      id: this.state.local_calendar.id,
-                      title: this.state.local_calendar.title,
-                      tag: 'local',
-                      events: this.state.local_calendar.eventsList.toArray()
-                    });
                 firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                     .doc('PlenR Calendar')
                     .collection('events')
@@ -271,22 +263,23 @@ export default class MyPlenR extends Component<Props> {
                   onDeleteEvent: (event) => {
                     this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                        .doc('PlenR Calendar').set({
-                          id: this.state.local_calendar.id,
-                          title: this.state.local_calendar.title,
-                          tag: 'local',
-                          events: this.state.local_calendar.eventsList.toArray()
+                        .doc('PlenR Calendar')
+                        .collection('events')
+                        .doc(event.id)
+                        .delete()
+                        .then(() => {
+                          alert('Event successfully deleted!');
+                        })
+                        .catch((error) => {
+                          alert('Error deleting event!');
                         });
                   },
                   onAddEvent: (data) => {
-                    this.setState({local_calendar: this.state.local_calendar.addEvent(data)})
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                        .doc('PlenR Calendar').set({
-                          id: this.state.local_calendar.id,
-                          title: this.state.local_calendar.title,
-                          tag: 'local',
-                          events: this.state.local_calendar.eventsList.toArray()
-                        });
+                        .doc('PlenR Calendar')
+                        .collection('events')
+                        .doc(data.id)
+                        .set(data);
                   }
                 },
               });
@@ -302,22 +295,23 @@ export default class MyPlenR extends Component<Props> {
                   onDeleteEvent: (event) => {
                     this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                        .doc('PlenR Calendar').set({
-                          id: this.state.local_calendar.id,
-                          title: this.state.local_calendar.title,
-                          tag: 'local',
-                          events: this.state.local_calendar.eventsList.toArray()
+                        .doc('PlenR Calendar')
+                        .collection('events')
+                        .doc(event.id)
+                        .delete()
+                        .then(() => {
+                          alert('Event successfully deleted!');
+                        })
+                        .catch((error) => {
+                          alert('Error deleting event!');
                         });
                   },
                   onAddEvent: (data) => {
-                    this.setState({local_calendar: this.state.local_calendar.addEvent(data)})
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                        .doc('PlenR Calendar').set({
-                          id: this.state.local_calendar.id,
-                          title: this.state.local_calendar.title,
-                          tag: 'local',
-                          events: this.state.local_calendar.eventsList.toArray()
-                        });
+                        .doc('PlenR Calendar')
+                        .collection('events')
+                        .doc(data.id)
+                        .set(data);
                   }
                 },
                 previewView: this.viewRef,
