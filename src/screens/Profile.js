@@ -45,7 +45,7 @@ export default class Profile extends Component<Props> {
                 let wrapper = {
                   id: doc.id,
                   title: data.title,
-                  numOfEvents: data.events.length
+                  numOfEvents: data.events ? data.events.length : 0
                 }
                 retrieved.push(wrapper);
               })

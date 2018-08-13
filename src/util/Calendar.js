@@ -1,5 +1,6 @@
 import Event from './Event';
 import SortedList from './SortedList';
+import { RRule, RRuleSet, rrulestr } from 'rrule';
 
 export default class Calendar {
   constructor(props) {

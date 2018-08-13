@@ -8,6 +8,7 @@ export default class Event {
     this.allday = props.allday;
     this.isImported = false;
     this.id = idCreator();
+    this.recurrence = props.recurrence;
   }
 
   static eventComparator(first, second) {
@@ -26,7 +27,8 @@ export default class Event {
       start: props.start,
       end: props.end,
       notes: props.notes,
-      allday: props.allday
+      allday: props.allday,
+      recurrence: props.recurrence
     });
     newEvent.isImported = true;
     newEvent.id = props.id;
@@ -70,6 +72,7 @@ export default class Event {
       notes: e.description,
       allday: allDay,
       id: e.id,
+      recurrence: e.recurrence
     });
     return event;
   }
