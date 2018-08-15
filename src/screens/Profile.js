@@ -42,9 +42,9 @@ export default class Profile extends Component<Props> {
               querySnapshot.forEach((doc) => {
                 let data = doc.data();
                 doc.ref.collection('events').onSnapshot((eventsSnapshot) => {
-                  let count = 0;
-                  let exists = false;
-                  let index = 0;
+                  let count = 0; // number of events in the calendar
+                  let exists = false; // whether the calendar already exists on cache
+                  let index = 0; // the index of the calendar on the calendar list array
                   eventsSnapshot.forEach((event) => {
                     count++;
                   })

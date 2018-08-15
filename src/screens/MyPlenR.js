@@ -73,63 +73,65 @@ export default class MyPlenR extends Component<Props> {
       local_calendar: new Calendar({title: 'Main Calendar'}),
       google_calendars: null,
     }
-    this.unsubscribe = null;
-    this.unsubscribe_from_calendars = null;
-    this.unsubscribe_from_PlenR = null;
+    this.unsubscribe = [];
     this.dataBaseRef = firebase.firestore().collection('users');
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
-  async componentDidMount() {
-    this.unsubscribe = await firebase.auth().onAuthStateChanged((user) => {
-      this.setState({currentUser: user});
-      if (user) {
-        this.props.navigator.showLightBox({
-          screen: 'PlenR.Loading',
-          style: {
-            backgroundBlur: 'light',
-            tapBackgroundToDismiss: false,
-          }
-        });
-        //get calendars ref from user
-        let calendarRef = this.dataBaseRef.doc(user.uid).collection('calendars');
-        //get events from database
-        this.unsubscribe_from_calendars = calendarRef.onSnapshot((querySnapshot) => {
-              let combined_google = [];
-              querySnapshot.forEach((doc) => {
-                if (doc.id !== 'PlenR Calendar') {
-                  combined_google = combined_google.concat(doc.data().items);
-                } else {
-                  doc.ref.collection('events')
-                    .where('start', '<=', this.state.currentTime.clone().endOf('month').toDate())
-                    .where('start', '>=', this.state.currentTime.clone().startOf('month').toDate())
-                    .onSnapshot((eventsSnapshot) => {
-                      let eventsArray = [];
-                      eventsSnapshot.forEach((event) => {
-                        eventsArray.push(event.data());
-                      });
-                      this.setState({ local_calendar: Calendar.parse(eventsArray) });
-                    }, (error) => {
-                      alert('error retrieving events from database!');
-                    });
-                }
-              });
-              this.setState({ google_calendars: Calendar.parseGoogle(combined_google) });
-              this.props.navigator.dismissLightBox();
-            }, (error) => {
-              alert('error retrieving events from database!');
-              this.props.navigator.dismissLightBox();
-            });
-      } else {
-        this.setState({google_calendars: null, local_calendar: new Calendar({title: 'Main Calendar'}),})
-      }
-    });
+  componentDidMount() {
+    this.unsubscribe.push(
+      firebase.auth().onAuthStateChanged((user) => {
+        this.setState({currentUser: user});
+        if (user) {
+          this.props.navigator.showLightBox({
+            screen: 'PlenR.Loading',
+            style: {
+              backgroundBlur: 'light',
+              tapBackgroundToDismiss: false,
+            }
+          });
+          //get calendars ref from user
+          let calendarRef = this.dataBaseRef.doc(user.uid).collection('calendars');
+          //get events from database
+          this.unsubscribe.push(
+            calendarRef.onSnapshot((querySnapshot) => {
+                let combined_google = [];
+                querySnapshot.forEach((doc) => {
+                  if (doc.id !== 'PlenR Calendar') {
+                    combined_google = combined_google.concat(doc.data().items);
+                  } else {
+                    this.unsubscribe.push(
+                      doc.ref.collection('events')
+                        .where('start', '<=', this.state.currentTime.clone().endOf('month').toDate())
+                        .where('start', '>=', this.state.currentTime.clone().startOf('month').toDate())
+                        .onSnapshot((eventsSnapshot) => {
+                          let eventsArray = [];
+                          eventsSnapshot.forEach((event) => {
+                            eventsArray.push(event.data());
+                          });
+                          this.setState({ local_calendar: Calendar.parse(eventsArray) });
+                        }, (error) => {
+                          alert('error retrieving events from database!');
+                        })
+                    );
+                  }
+                });
+                this.setState({ google_calendars: Calendar.parseGoogle(combined_google) });
+                this.props.navigator.dismissLightBox();
+              }, (error) => {
+                alert('error retrieving events from database!');
+                this.props.navigator.dismissLightBox();
+              })
+          );
+        } else {
+          this.setState({google_calendars: null, local_calendar: new Calendar({title: 'Main Calendar'}),})
+        }
+      })
+    );
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
-    this.unsubscribe_from_calendars();
-    this.unsubscribe_from_PlenR();
+    this.unsubscribe.forEach(unsubscribe => unsubscribe());
   }
 
   onNavigatorEvent(event) {
@@ -335,25 +337,65 @@ export default class MyPlenR extends Component<Props> {
   handlePageChange = (event) => {
     let currentOffset = event.nativeEvent.contentOffset.y;
     let diff = currentOffset - (this.state.scrollOffset || 0);
-    let prevMonth = this.state.currentTime.clone().subtract(-diff/300, 'months').toDate();
-    let nextMonth = this.state.currentTime.clone().add(diff/300, 'months').toDate();
+    let prevMonth = this.state.currentTime.clone().subtract(-diff/300, 'months');
+    let nextMonth = this.state.currentTime.clone().add(diff/300, 'months');
     let today = moment();
     let futureMonth = {
-      key: moment(nextMonth).clone().add(1, 'months').format("MMMM YYYY"),
-      month: moment(nextMonth).clone().add(1, 'months').month(),
-      year: moment(nextMonth).clone().add(1, 'months').year(),
+      key: nextMonth.clone().add(1, 'months').format("MMMM YYYY"),
+      month: nextMonth.clone().add(1, 'months').month(),
+      year: nextMonth.clone().add(1, 'months').year(),
     };
     if (diff > 160) {
       this.setState({
         scrollOffset: currentOffset,
-        currentTime: moment(nextMonth).isSame(today, 'month') ? today : moment(nextMonth).startOf('month'),
+        currentTime: nextMonth.isSame(today, 'month') ? today : nextMonth.startOf('month'),
         yearMonthData: this.checkIfCalendarDataExists(futureMonth),
       });
+      this.updateLocalCalendar(nextMonth);
     } else if (diff < -160) {
       this.setState({
         scrollOffset: currentOffset,
-        currentTime: moment(prevMonth).isSame(today, 'month') ? today : moment(prevMonth).startOf('month'),
+        currentTime: prevMonth.isSame(today, 'month') ? today : prevMonth.startOf('month'),
       });
+      this.updateLocalCalendar(prevMonth);
+    }
+  }
+
+  updateLocalCalendar(time) {
+    if (this.state.currentUser) {
+      //get calendars ref from user
+      let calendarRef = this.dataBaseRef.doc(this.state.currentUser.uid).collection('calendars');
+      //get events from database
+      this.unsubscribe.push(
+        calendarRef.onSnapshot((querySnapshot) => {
+            //let combined_google = [];
+            querySnapshot.forEach((doc) => {
+              if (doc.id !== 'PlenR Calendar') {
+                //combined_google = combined_google.concat(doc.data().items);
+              } else {
+                this.unsubscribe.push(
+                  doc.ref.collection('events')
+                    .where('start', '<=', time.clone().endOf('month').toDate())
+                    .where('start', '>=', time.clone().startOf('month').toDate())
+                    .onSnapshot((eventsSnapshot) => {
+                      let eventsArray = [];
+                      eventsSnapshot.forEach((event) => {
+                        eventsArray.push(event.data());
+                      });
+                      this.setState({ local_calendar: Calendar.parse(eventsArray) });
+                    }, (error) => {
+                      alert('error retrieving events from database!');
+                    })
+                );
+              }
+            });
+            //this.setState({ google_calendars: Calendar.parseGoogle(combined_google) });
+            //this.props.navigator.dismissLightBox();
+          }, (error) => {
+            alert('error retrieving events from database!');
+            //this.props.navigator.dismissLightBox();
+          })
+      );
     }
   }
 
