@@ -10,14 +10,14 @@ export default class Calendar {
   }
 
   addEvent(event) {
-    newCalendar = new Calendar({title: this.title})
+    let newCalendar = new Calendar({title: this.title})
     newCalendar.id = this.id;
     newCalendar.eventsList = this.eventsList.add(event);
     return newCalendar;
   }
 
   deleteEvent(event) {
-    newCalendar = new Calendar({title: this.title})
+    let newCalendar = new Calendar({title: this.title})
     newCalendar.id = this.id;
     newCalendar.eventsList = this.eventsList.delete(event);
     return newCalendar;
@@ -31,11 +31,20 @@ export default class Calendar {
     });
   }
 
-  static parse(events) {
-    let newCalendar = new Calendar({title: 'Main Calendar'});
+  addEvents(events) {
+    let newCalendar = new Calendar({title: this.title})
+    newCalendar.id = this.id;
     for (let event of events) {
-      let newEvent = Event.localAdd(event);
-      newCalendar = newCalendar.addEvent(newEvent);
+      newCalendar.eventsList = this.eventsList.add(event);
+    }
+    return newCalendar;
+  }
+
+  static parse(events, title) {
+    let newCalendar = new Calendar({title: title});
+    for (let event of events) {
+      //let newEvent = Event.localAdd(event);
+      newCalendar = newCalendar.addEvent(event);
     }
     return newCalendar;
   }

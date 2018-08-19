@@ -9,12 +9,15 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
+var moment = require('moment');
+
 export default class CalendarMonthView extends PureComponent<Props> {
   constructor(props) {
     super(props);
     this.state = {
       weekends: 6,
-      day_selected: this.props.day_selected
+      day_selected: props.day_selected.year() == props.year
+          && props.day_selected.month() == props.month ? props.day_selected.date() : 1
     }
   }
 

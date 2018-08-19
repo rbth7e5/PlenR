@@ -16,6 +16,7 @@ import SortedList from '../util/SortedList';
 import Event from '../util/Event';
 import CalendarBox from '../components/CalendarBox';
 import styleConstructor from '../util/style';
+import Calendar from '../util/Calendar';
 
 import firebase from 'react-native-firebase';
 
@@ -104,6 +105,14 @@ export default class GoogleLogin extends Component<Props> {
         displayName: currentUser.user.displayName,
         email: currentUser.user.email,
       });
+      let newCalendar = new Calendar({title: 'Main Calendar'});
+      firebase.firestore().collection('users').doc(currentUser.user.uid).collection('calendars')
+          .doc('PlenR Calendar')
+          .set({
+            id: newCalendar.id,
+            tag: 'local',
+            title: newCalendar.title
+          });
       this.setState({
         user: data,
         signingIn: false,

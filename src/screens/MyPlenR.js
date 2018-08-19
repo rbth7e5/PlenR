@@ -66,12 +66,11 @@ export default class MyPlenR extends Component<Props> {
     this.state = {
       currentTime: today,
       currentUser: null,
-      local_events: new SortedList(Event.eventComparator),
-      calendarKeys: [],
       scrollOffset: (data.length - 2) * 300,
       yearMonthData: data,
-      local_calendar: new Calendar({title: 'Main Calendar'}),
+      local_calendars: [],
       google_calendars: null,
+      refresh: false
     }
     this.unsubscribe = [];
     this.dataBaseRef = firebase.firestore().collection('users');
@@ -95,11 +94,11 @@ export default class MyPlenR extends Component<Props> {
           //get events from database
           this.unsubscribe.push(
             calendarRef.onSnapshot((querySnapshot) => {
-                let combined_google = [];
+                //let combined_google = [];
                 querySnapshot.forEach((doc) => {
-                  if (doc.id !== 'PlenR Calendar') {
-                    combined_google = combined_google.concat(doc.data().items);
-                  } else {
+                  //if (doc.id !== 'PlenR Calendar') {
+                    //combined_google = combined_google.concat(doc.data().items);
+                  //} else {
                     this.unsubscribe.push(
                       doc.ref.collection('events')
                         .where('start', '<=', this.state.currentTime.clone().endOf('month').toDate())
@@ -109,22 +108,27 @@ export default class MyPlenR extends Component<Props> {
                           eventsSnapshot.forEach((event) => {
                             eventsArray.push(event.data());
                           });
-                          this.setState({ local_calendar: Calendar.parse(eventsArray) });
+                          this.setState({ local_calendars: this.state.local_calendars
+                                .slice()
+                                .filter(calendar => calendar.title !== doc.id)
+                                .concat(Calendar.parse(eventsArray, doc.id)) });
+                          this.props.navigator.dismissLightBox();
                         }, (error) => {
                           alert('error retrieving events from database!');
+                          this.props.navigator.dismissLightBox();
                         })
                     );
-                  }
+                  //}
                 });
-                this.setState({ google_calendars: Calendar.parseGoogle(combined_google) });
-                this.props.navigator.dismissLightBox();
+                //this.setState({ google_calendars: Calendar.parseGoogle(combined_google) });
+
               }, (error) => {
                 alert('error retrieving events from database!');
                 this.props.navigator.dismissLightBox();
               })
           );
         } else {
-          this.setState({google_calendars: null, local_calendar: new Calendar({title: 'Main Calendar'}),})
+          this.setState({local_calendars: []})
         }
       })
     );
@@ -186,30 +190,17 @@ export default class MyPlenR extends Component<Props> {
           animationType: 'slide-up',
           passProps: {
             onAddEvent: (data, invitees) => {
-              this.setState({local_calendar: this.state.local_calendar.addEvent(data)});
               firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
-                  .doc('PlenR Calendar').set({
-                    id: this.state.local_calendar.id,
-                    title: this.state.local_calendar.title,
-                    tag: 'local',
-                    events: this.state.local_calendar.eventsList.toArray()
-                  });
+                  .doc('PlenR Calendar')
+                  .collection('events')
+                  .doc(data.id)
+                  .set(data);
               invitees.forEach((invitee) => {
-                let inviteeRef = firebase.firestore().collection('users').doc(invitee.id).collection('calendars').doc('PlenR Calendar');
-                firebase.firestore()
-                  .runTransaction((transaction) => {
-                    return transaction.get(inviteeRef).then((doc) => {
-                      if (!doc.data().events) {
-                        transaction.set({
-                          events: [data]
-                        });
-                      } else {
-                        let events = doc.data().events;
-                        events.push(data);
-                        transaction.update(inviteeRef, { events: events });
-                      }
-                    })
-                  })
+                firebase.firestore().collection('users').doc(invitee.id).collection('calendars')
+                    .doc('PlenR Calendar')
+                    .collection('events')
+                    .doc(data.id)
+                    .set(data);
               })
             }
           }
@@ -220,19 +211,20 @@ export default class MyPlenR extends Component<Props> {
 
   onSignOut() {
     this.setState({
-      local_events: new SortedList(Event.eventComparator),
-      local_calendar: new Calendar({title: 'Main Calendar'})
+      local_calendars: []
     })
   }
 
   retrieveEvents(currentDay) {
-    let retrievedEvents;
+    let retrievedEvents = new SortedList(Event.eventComparator);
     try {
-      let localRetrievedEvents = this.state.local_calendar.getEvents(currentDay);
-      let googleRetrievedEvents = this.state.google_calendars ?
-          this.state.google_calendars.getEvents(currentDay) :
-          new SortedList(Event.eventComparator);
-      retrievedEvents = SortedList.merge(localRetrievedEvents, googleRetrievedEvents);
+      this.state.local_calendars.forEach((calendar) => {
+        retrievedEvents = SortedList.merge(retrievedEvents, calendar.getEvents(currentDay));
+      })
+      //let googleRetrievedEvents = this.state.google_calendars ?
+        //  this.state.google_calendars.getEvents(currentDay) :
+          //new SortedList(Event.eventComparator);
+      //retrievedEvents = localRetrievedEvents.merge(googleRetrievedEvents);
     } catch (error) {
       console.log('local calendar has no events inside for that day');
       retrievedEvents = null;
@@ -263,7 +255,6 @@ export default class MyPlenR extends Component<Props> {
                 passProps: {
                   event: e,
                   onDeleteEvent: (event) => {
-                    this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                         .doc('PlenR Calendar')
                         .collection('events')
@@ -295,7 +286,6 @@ export default class MyPlenR extends Component<Props> {
                 passProps: {
                   event: e,
                   onDeleteEvent: (event) => {
-                    this.setState({local_calendar: this.state.local_calendar.deleteEvent(event)});
                     firebase.firestore().collection('users').doc(this.state.currentUser.uid).collection('calendars')
                         .doc('PlenR Calendar')
                         .collection('events')
@@ -350,12 +340,14 @@ export default class MyPlenR extends Component<Props> {
         scrollOffset: currentOffset,
         currentTime: nextMonth.isSame(today, 'month') ? today : nextMonth.startOf('month'),
         yearMonthData: this.checkIfCalendarDataExists(futureMonth),
+        refresh: !this.state.refresh
       });
       this.updateLocalCalendar(nextMonth);
     } else if (diff < -160) {
       this.setState({
         scrollOffset: currentOffset,
         currentTime: prevMonth.isSame(today, 'month') ? today : prevMonth.startOf('month'),
+        refresh: !this.state.refresh
       });
       this.updateLocalCalendar(prevMonth);
     }
@@ -370,9 +362,7 @@ export default class MyPlenR extends Component<Props> {
         calendarRef.onSnapshot((querySnapshot) => {
             //let combined_google = [];
             querySnapshot.forEach((doc) => {
-              if (doc.id !== 'PlenR Calendar') {
-                //combined_google = combined_google.concat(doc.data().items);
-              } else {
+
                 this.unsubscribe.push(
                   doc.ref.collection('events')
                     .where('start', '<=', time.clone().endOf('month').toDate())
@@ -382,12 +372,15 @@ export default class MyPlenR extends Component<Props> {
                       eventsSnapshot.forEach((event) => {
                         eventsArray.push(event.data());
                       });
-                      this.setState({ local_calendar: Calendar.parse(eventsArray) });
+                      this.setState({ local_calendars: this.state.local_calendars
+                            .slice()
+                            .filter(calendar => calendar.title !== doc.id)
+                            .concat(Calendar.parse(eventsArray, doc.id)) });
                     }, (error) => {
                       alert('error retrieving events from database!');
                     })
                 );
-              }
+
             });
             //this.setState({ google_calendars: Calendar.parseGoogle(combined_google) });
             //this.props.navigator.dismissLightBox();
@@ -409,24 +402,26 @@ export default class MyPlenR extends Component<Props> {
         </View>
         <View style={styles.calendar_month_view}>
           <VirtualizedList
+            extraData={this.state.currentTime}
             getItem={(data, index) => data[index]}
             getItemCount={(data) => data.length}
             getItemLayout={(data, index) => (
               {length: 300, offset: 300 * index, index}
             )}
             initialScrollIndex={this.state.yearMonthData.length - 2}
-            initialNumToRender={5}
+            initialNumToRender={1}
             onMomentumScrollEnd={this.handlePageChange}
             showsVerticalScrollIndicator={false}
             pagingEnabled={true}
             data={this.state.yearMonthData}
             renderItem={({item}) => <CalendarMonthView
+              key={this.state.refresh}
               year={item.year}
               month={item.month}
               onDaySelect={(day_selected) => {
                 this.setState({currentTime: this.state.currentTime.clone().date(day_selected)});
               }}
-              day_selected={item.month == this.state.currentTime.month() ? this.state.currentTime.date() : 1}
+              day_selected={this.state.currentTime}
             />}
           />
         </View>

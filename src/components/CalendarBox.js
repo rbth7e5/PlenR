@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import firebase from 'react-native-firebase';
+import Database from '../util/Database';
 
 export default class CalendarBox extends Component<Props> {
   constructor(props) {
@@ -26,6 +27,7 @@ export default class CalendarBox extends Component<Props> {
   componentDidMount() {
     this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       this.setState({currentUser: user});
+      this.dataBase = new Database({user});
     });
   }
 
@@ -33,7 +35,7 @@ export default class CalendarBox extends Component<Props> {
     this.unsubscribe();
   }
 
-  getEventsFromCalendar = async () => {
+  getEventsFromCalendar = async (time) => {
     this.setState({
       retrievingEvents: true,
     });
@@ -49,7 +51,11 @@ export default class CalendarBox extends Component<Props> {
           retrievingEvents: false,
         })
         this.dataBaseRef.doc(this.state.currentUser.uid).collection('calendars').doc(this.props.calendar.id)
-            .set(eventsList);
+            .set({
+              title: eventsList.summary,
+              tag: 'imported'
+            });
+        this.dataBase.importCalendarFromGoogle(eventsList, this.props.calendar.id);
       } else {
         alert('Sync Failed');
         this.setState({
@@ -58,7 +64,7 @@ export default class CalendarBox extends Component<Props> {
       }
     };
     request.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/'+this.props.calendar.id+'/events?access_token='+this.props.user.accessToken
-        + '&timeMin=' + moment().subtract(1, 'months').utc().format().toString());
+        + '&timeMin=' + time.utc().format().toString());
     request.send();
   }
 
@@ -73,7 +79,7 @@ export default class CalendarBox extends Component<Props> {
   render() {
     return (
       <TouchableHighlight
-        onPress={this.getEventsFromCalendar}
+        onPress={() => this.getEventsFromCalendar(moment().subtract(1, 'months'))}
         underlayColor={'#aaa'}
       >
         <View style={styles.calendar_container}>
